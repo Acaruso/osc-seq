@@ -28,6 +28,7 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
+    "jwt-decode": "^3.0.0-beta.2",
     "node-osc": "^5.2.1"
   }
 }

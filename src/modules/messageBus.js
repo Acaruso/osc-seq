@@ -1,6 +1,5 @@
 import { drawBall } from "./ball";
 import { drawDebugDialog } from "./dialog";
-import { logGame } from "./game";
 
 class MessageBus {
   constructor(state, options = {}) {
@@ -24,8 +23,17 @@ class MessageBus {
       "draw ball": (message) => {
         drawBall(this.state.ball, this.state.canvas);
       },
-      "draw debug dialog" : (message) => {
+      "draw debug dialog": (message) => {
         drawDebugDialog(this.state.debugText, this.state.canvas);
+      },
+      "osc trigger": (message) => {
+        console.log('osc trigger');
+        // this.state.oscClient.send('/oscAddress', 200);
+        this.state.oscClient.send(
+          '/oscAddress',
+          JSON.stringify({ data: "my data" })
+        );
+        // this.state.oscClient.send('/oscAddress', "data" );
       },
       "ArrowRight:keydown": (message) => {
         this.state.keyboard.right = true;
@@ -53,12 +61,10 @@ class MessageBus {
       },
       "Enter:keydown": (message) => {
         this.state.keyboard.enter = true;
+        this.messages.push({ type: "osc trigger" });
       },
       "Enter:keyup": (message) => {
         this.state.keyboard.enter = false;
-      },
-      "z:keydown": (message) => {
-        logGame(this.state);
       },
       "end of draw loop": (message) => { },
     };

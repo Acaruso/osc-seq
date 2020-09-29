@@ -1,3 +1,4 @@
+import { Client } from 'node-osc';
 import { getBall } from "./ball";
 import { getKeyboard, addKeyboardHandlers, handleKeyboardEvents } from "./keyboard";
 import { MessageBus } from "./messageBus";
@@ -10,6 +11,8 @@ class Game {
     this.logger = logging ? new Logger("log.txt") : {};
 
     this.state = {};
+
+    this.state.oscClient = new Client('127.0.0.1', 3333);
     this.state.canvas = document.getElementById("myCanvas");
     this.state.ball = getBall(this.state.canvas);
     this.state.keyboard = getKeyboard();
