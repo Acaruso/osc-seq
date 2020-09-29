@@ -10,11 +10,9 @@ function createWindow() {
       nodeIntegration: true
     }
   });
-  
-  console.log('dir')
-  console.log(__dirname)
-  win.loadFile(__dirname + '/index.html');
 
+  win.loadFile(__dirname + '/index.html');
+  
   win.webContents.openDevTools()
 }
 

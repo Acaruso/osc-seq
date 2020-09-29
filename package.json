@@ -1,7 +1,7 @@
 {
   "name": "osc-seq",
   "version": "1.0.0",
-  "description": "Music sequencer using OSC (Open Sound Control)",
+  "description": "osc-seq",
   "main": "src/main.js",
   "scripts": {
     "start": "webpack --mode development && electron ."
@@ -26,5 +26,8 @@
     "electron": "^10.1.1",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11"
+  },
+  "dependencies": {
+    "node-osc": "^5.2.1"
   }
 }
