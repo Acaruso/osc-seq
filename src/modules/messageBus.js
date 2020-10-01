@@ -1,5 +1,4 @@
-import { drawBall } from "./ball";
-import { drawDebugDialog } from "./dialog";
+import { getRootMessageTable } from "./message-handlers/rootMessageTable";
 
 class MessageBus {
   constructor(state, options = {}) {
@@ -9,69 +8,7 @@ class MessageBus {
     this.logging = options.logging;
     this.logger = options.logger;
 
-    this.messageTable = {
-      "clear screen": (message) => {
-        let ctx = this.state.canvas.getContext("2d");
-        ctx.clearRect(0, 0, this.state.canvas.width, this.state.canvas.height);
-      },
-      "update ball": (message) => {
-        this.state.ball = message.data.ball;
-      },
-      "update debug text": (message) => {
-        this.state.debugText = message.data.newDebugText;
-      },
-      "draw ball": (message) => {
-        drawBall(this.state.ball, this.state.canvas);
-      },
-      "draw debug dialog": (message) => {
-        drawDebugDialog(this.state.debugText, this.state.canvas);
-      },
-      "update clock": (message) => {
-        this.state.clock = (this.state.clock + 1) % 4096;
-      },
-      "osc trigger 1": (message) => {
-        if (this.state.clock % 32 === 0) {
-          this.state.oscClient.send('/1', 200);
-        }
-      },
-      "osc trigger 2": (message) => {
-        if (this.state.clock % 64 === 0) {
-          this.state.oscClient.send('/2', 200);
-        }
-      },
-      "ArrowRight:keydown": (message) => {
-        this.state.keyboard.right = true;
-      },
-      "ArrowRight:keyup": (message) => {
-        this.state.keyboard.right = false;
-      },
-      "ArrowLeft:keydown": (message) => {
-        this.state.keyboard.left = true;
-      },
-      "ArrowLeft:keyup": (message) => {
-        this.state.keyboard.left = false;
-      },
-      "ArrowUp:keydown": (message) => {
-        this.state.keyboard.up = true;
-      },
-      "ArrowUp:keyup": (message) => {
-        this.state.keyboard.up = false;
-      },
-      "ArrowDown:keydown": (message) => {
-        this.state.keyboard.down = true;
-      },
-      "ArrowDown:keyup": (message) => {
-        this.state.keyboard.down = false;
-      },
-      "Enter:keydown": (message) => {
-        this.state.keyboard.enter = true;
-        this.messages.push({ type: "osc trigger" });
-      },
-      "Enter:keyup": (message) => {
-        this.state.keyboard.enter = false;
-      },
-      "end of draw loop": (message) => { },
-    };
+    this.messageTable = getRootMessageTable(this.state);
   }
 
   push(newMessage) {

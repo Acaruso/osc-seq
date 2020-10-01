@@ -1,3 +1,5 @@
 import { Game } from "./modules/game";
 
-let game = new Game({ logging: false });
+const game = new Game({ logging: false });
+
+game.startGameLoop();

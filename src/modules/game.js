@@ -26,8 +26,6 @@ class Game {
     });
 
     addKeyboardHandlers(this.messageBus);
-
-    this.state.interval = setInterval(() => this.draw(), 10);
   }
 
   draw() {
@@ -35,6 +33,7 @@ class Game {
       { type: "clear screen" },
       { type: "osc trigger 1" },
       { type: "osc trigger 2" },
+      // { type: "handle keyboard events" },
       handleKeyboardEvents(this.state),
       { type: "draw ball" },
       { type: "draw debug dialog" },
@@ -44,6 +43,10 @@ class Game {
 
     this.messageBus.push(messages);
     this.messageBus.handleMessages();
+  }
+
+  startGameLoop() {
+    this.state.interval = setInterval(() => this.draw(), 10);
   }
 }
 

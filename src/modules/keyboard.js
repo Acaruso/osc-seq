@@ -36,10 +36,6 @@ function handleKeyboardEvents(state) {
     newBall.y += 2;
   }
 
-  // if (keyboard.enter) {
-  //   messages.push({ type: "osc trigger" });
-  // }
-
   messages.push({ type: "update ball", data: { ball: newBall } });
   return messages;
 }
