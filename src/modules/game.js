@@ -18,6 +18,7 @@ class Game {
     this.state.keyboard = getKeyboard();
     this.state.status = "in progress";
     this.state.debugText = "";
+    this.state.clock = 0;
 
     this.messageBus = new MessageBus(this.state, {
       logging: logging,
@@ -32,9 +33,12 @@ class Game {
   draw() {
     let messages = [
       { type: "clear screen" },
+      { type: "osc trigger 1" },
+      { type: "osc trigger 2" },
       handleKeyboardEvents(this.state),
       { type: "draw ball" },
       { type: "draw debug dialog" },
+      { type: "update clock" },
       { type: "end of draw loop" },
     ];
 

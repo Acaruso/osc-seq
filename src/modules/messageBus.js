@@ -26,14 +26,18 @@ class MessageBus {
       "draw debug dialog": (message) => {
         drawDebugDialog(this.state.debugText, this.state.canvas);
       },
-      "osc trigger": (message) => {
-        console.log('osc trigger');
-        // this.state.oscClient.send('/oscAddress', 200);
-        this.state.oscClient.send(
-          '/oscAddress',
-          JSON.stringify({ data: "my data" })
-        );
-        // this.state.oscClient.send('/oscAddress', "data" );
+      "update clock": (message) => {
+        this.state.clock = (this.state.clock + 1) % 4096;
+      },
+      "osc trigger 1": (message) => {
+        if (this.state.clock % 32 === 0) {
+          this.state.oscClient.send('/1', 200);
+        }
+      },
+      "osc trigger 2": (message) => {
+        if (this.state.clock % 64 === 0) {
+          this.state.oscClient.send('/2', 200);
+        }
       },
       "ArrowRight:keydown": (message) => {
         this.state.keyboard.right = true;
