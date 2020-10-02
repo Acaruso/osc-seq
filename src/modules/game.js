@@ -41,6 +41,7 @@ function gameLoop(game) {
     { type: "osc trigger 2" },
     handleKeyboardEvents(game.state),
     { type: "draw ball" },
+    { type: "draw rect" },
     { type: "draw debug dialog" },
     { type: "update clock" },
     { type: "end of draw loop" },
