@@ -1,5 +1,5 @@
-import { Game } from "./modules/game";
+import { getGame, startGameLoop } from "./modules/game";
 
-const game = new Game({ logging: false });
+const game = getGame();
 
-game.startGameLoop();
+startGameLoop(game);

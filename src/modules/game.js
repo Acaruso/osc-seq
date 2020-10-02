@@ -1,53 +1,71 @@
 import { Client } from 'node-osc';
 import { getBall } from "./ball";
 import { getKeyboard, addKeyboardHandlers, handleKeyboardEvents } from "./keyboard";
-import { MessageBus } from "./messageBus";
+import { MessageQueue } from "./messageQueue";
 import { Logger } from "./logger";
+import { getRootMessageTable } from "./message-handlers/rootMessageTable";
 
-class Game {
-  constructor(options = {}) {
-    let { logging } = options;
+function getGame(options = {}) {
+  let game = {};
 
-    this.logger = logging ? new Logger("log.txt") : {};
+  let { logging } = options;
+  game.logger = logging ? new Logger("log.txt") : {};
 
-    this.state = {};
+  game.state = {};
 
-    this.state.oscClient = new Client('127.0.0.1', 3333);
-    this.state.canvas = document.getElementById("myCanvas");
-    this.state.ball = getBall(this.state.canvas);
-    this.state.keyboard = getKeyboard();
-    this.state.status = "in progress";
-    this.state.debugText = "";
-    this.state.clock = 0;
+  game.state.oscClient = new Client('127.0.0.1', 3333);
+  game.state.canvas = document.getElementById("myCanvas");
+  game.state.ball = getBall(game.state.canvas);
+  game.state.keyboard = getKeyboard();
+  game.state.status = "in progress";
+  game.state.debugText = "";
+  game.state.clock = 0;
 
-    this.messageBus = new MessageBus(this.state, {
-      logging: logging,
-      logger: this.logger,
-    });
+  game.queue = new MessageQueue();
 
-    addKeyboardHandlers(this.messageBus);
-  }
+  addKeyboardHandlers(game.queue);
 
-  draw() {
-    let messages = [
-      { type: "clear screen" },
-      { type: "osc trigger 1" },
-      { type: "osc trigger 2" },
-      // { type: "handle keyboard events" },
-      handleKeyboardEvents(this.state),
-      { type: "draw ball" },
-      { type: "draw debug dialog" },
-      { type: "update clock" },
-      { type: "end of draw loop" },
-    ];
+  game.messageTable = getRootMessageTable(game.state);
 
-    this.messageBus.push(messages);
-    this.messageBus.handleMessages();
-  }
+  return game;
+}
 
-  startGameLoop() {
-    this.state.interval = setInterval(() => this.draw(), 10);
+function startGameLoop(game) {
+  game.state.interval = setInterval(() => gameLoop(game), 10);
+}
+
+function gameLoop(game) {
+  let messages = [
+    { type: "clear screen" },
+    { type: "osc trigger 1" },
+    { type: "osc trigger 2" },
+    handleKeyboardEvents(game.state),
+    { type: "draw ball" },
+    { type: "draw debug dialog" },
+    { type: "update clock" },
+    { type: "end of draw loop" },
+  ];
+
+  game.queue.push(messages);
+
+  handleMessages(
+    game.queue, 
+    game.messageTable, 
+    game.logger, 
+    game.logging
+  );
+}
+
+function handleMessages(queue, messageTable, logger, logging) {
+  let message = null;
+  while (message = queue.messages.shift()) {
+    if (messageTable[message.type]) {
+      messageTable[message.type](message);
+      if (logging) {
+        logger.log(JSON.stringify(message));
+      }
+    }
   }
 }
 
-export { Game };
+export { getGame, startGameLoop };
