@@ -1,5 +1,7 @@
 import { drawBall } from "./../ball";
 import { drawDebugDialog } from "./../dialog";
+import { drawRect, strokeRect } from "./../util";
+import { drawGrid } from "./../grid";
 
 function getDrawMessageTable(state) {
   return {
@@ -12,6 +14,9 @@ function getDrawMessageTable(state) {
     },
     "draw debug dialog": (message) => {
       drawDebugDialog(state.debugText, state.canvas);
+    },
+    "draw rect": (message) => {
+      drawGrid(state.grid, state.canvas);
     },
   };
 }

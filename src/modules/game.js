@@ -4,6 +4,7 @@ import { getKeyboard, addKeyboardHandlers, handleKeyboardEvents } from "./keyboa
 import { MessageQueue } from "./messageQueue";
 import { Logger } from "./logger";
 import { getRootMessageTable } from "./message-handlers/rootMessageTable";
+import { getGrid } from './grid';
 
 function getGame(options = {}) {
   let game = {};
@@ -20,6 +21,7 @@ function getGame(options = {}) {
   game.state.status = "in progress";
   game.state.debugText = "";
   game.state.clock = 0;
+  game.state.grid = getGrid(2, 4);
 
   game.queue = new MessageQueue();
 

@@ -2,9 +2,16 @@ function drawRect(rect, canvas) {
   let ctx = canvas.getContext("2d");
   ctx.beginPath();
   ctx.rect(rect.x, rect.y, rect.width, rect.height);
-  // ctx.fillStyle = "#FF5733";
+  ctx.fillStyle = "#FF5733";
   ctx.fill();
   ctx.closePath();
+}
+
+function strokeRect(rect, canvas) {
+  let ctx = canvas.getContext("2d");
+  ctx.strokeStyle = "#000000";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
 }
 
 function detectRectCollision(rect1, rect2) {
@@ -25,4 +32,4 @@ function getSquareFromCircle(circle) {
   return square;
 }
 
-export { drawRect, detectRectCollision, getSquareFromCircle };
+export { drawRect, strokeRect, detectRectCollision, getSquareFromCircle };
