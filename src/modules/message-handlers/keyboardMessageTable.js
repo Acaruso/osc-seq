@@ -1,10 +1,5 @@
-import { handleKeyboardEvents } from "../keyboard";
-
 function getKeyboardMessageTable(state) {
   return {
-    "handle keyboard events": (message) => {
-      handleKeyboardEvents(state);
-    },
     "ArrowRight:keydown": (message) => {
       state.keyboard.right = true;
     },

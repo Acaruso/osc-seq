@@ -21,9 +21,9 @@ function getGame(options = {}) {
   game.state.debugText = "";
   game.state.clock = 0;
 
-  game.messageQueue = new MessageQueue();
+  game.queue = new MessageQueue();
 
-  addKeyboardHandlers(game.messageQueue);
+  addKeyboardHandlers(game.queue);
 
   game.messageTable = getRootMessageTable(game.state);
 
@@ -39,7 +39,6 @@ function gameLoop(game) {
     { type: "clear screen" },
     { type: "osc trigger 1" },
     { type: "osc trigger 2" },
-    // { type: "handle keyboard events" },
     handleKeyboardEvents(game.state),
     { type: "draw ball" },
     { type: "draw debug dialog" },
@@ -47,19 +46,19 @@ function gameLoop(game) {
     { type: "end of draw loop" },
   ];
 
-  game.messageQueue.push(messages);
+  game.queue.push(messages);
 
   handleMessages(
-    game.messageQueue, 
+    game.queue, 
     game.messageTable, 
     game.logger, 
     game.logging
   );
 }
 
-function handleMessages(messageQueue, messageTable, logger, logging) {
+function handleMessages(queue, messageTable, logger, logging) {
   let message = null;
-  while (message = messageQueue.messages.shift()) {
+  while (message = queue.messages.shift()) {
     if (messageTable[message.type]) {
       messageTable[message.type](message);
       if (logging) {

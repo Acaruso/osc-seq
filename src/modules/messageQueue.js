@@ -1,5 +1,3 @@
-import { getRootMessageTable } from "./message-handlers/rootMessageTable";
-
 class MessageQueue {
   constructor() {
     this.messages = [];
