@@ -21,19 +21,22 @@ function getGrid(numRows, numCols) {
   return grid;
 }
 
-function drawGrid(grid, canvas) {
+function getRectsToDraw(grid) {
+  let rects = [];
+
   for (let row = 0; row < grid.numRows; row++) {
     for (let col = 0; col < grid.numCols; col++) {
-
       const x = (grid.cellHeight * col) + grid.x;
       const y = (grid.cellWidth * row) + grid.y;
-
-      strokeRect(
-        { x: x, y: y, width: grid.cellWidth, height: grid.cellHeight }, 
-        canvas
-      );
+      rects.push({ x: x, y: y, width: grid.cellWidth, height: grid.cellHeight });
     }
   }
+
+  return rects;
+}
+
+function drawGrid(grid, canvas) {
+  getRectsToDraw(grid).forEach((x) => strokeRect(x, canvas));
 }
 
 export { getGrid, drawGrid }
