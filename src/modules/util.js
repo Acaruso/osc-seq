@@ -2,16 +2,27 @@ function drawRect(rect, canvas) {
   let ctx = canvas.getContext("2d");
   ctx.beginPath();
   ctx.rect(rect.x, rect.y, rect.width, rect.height);
-  ctx.fillStyle = "#FF5733";
+  ctx.fillStyle = rect.color;
   ctx.fill();
   ctx.closePath();
 }
 
 function strokeRect(rect, canvas) {
+  const lineWidth = 2;
   let ctx = canvas.getContext("2d");
   ctx.strokeStyle = "#000000";
-  ctx.lineWidth = 2;
+  ctx.lineWidth = lineWidth;
   ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
+  
+  if (rect.fill) {
+    let inner = {};
+    inner.x = rect.x + (lineWidth / 2);
+    inner.y = rect.y + (lineWidth / 2);
+    inner.width = rect.width - lineWidth;
+    inner.height = rect.height - lineWidth;
+    inner.color = rect.innerColor;
+    drawRect(inner, canvas);
+  }
 }
 
 function detectRectCollision(rect1, rect2) {
@@ -32,4 +43,20 @@ function getSquareFromCircle(circle) {
   return square;
 }
 
-export { drawRect, strokeRect, detectRectCollision, getSquareFromCircle };
+function isCoordInsideRect(coord, rect) {
+  const { x, y } = coord;
+  return (
+    x >= rect.x && 
+    y >= rect.y && 
+    x <= rect.x + rect.width &&
+    y <= rect.y + rect.height
+  );
+}
+
+export { 
+  drawRect,
+  strokeRect,
+  detectRectCollision,
+  getSquareFromCircle,
+  isCoordInsideRect,
+};

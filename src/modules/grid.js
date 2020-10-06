@@ -11,32 +11,39 @@ function getGrid(numRows, numCols) {
   grid.y = 4;
   grid.width = grid.numCols * grid.cellWidth;
   grid.height = grid.numRows * grid.cellHeight;
-
-  grid.data = new Array(numRows);
-  
-  for (let i = 0; i < numRows; i++) {
-    grid.data[i] = new Array(numCols).fill(0);
-  }
+  grid.data = getGridData(grid);
 
   return grid;
 }
 
-function getRectsToDraw(grid) {
-  let rects = [];
+function getGridData(grid) {
+  const cell = {
+    fill: true,
+    color: "#FF5733",
+  };
+
+  let data = new Array(grid.numRows);
+  
+  for (let i = 0; i < grid.numRows; i++) {
+    data[i] = new Array(grid.numCols).fill({});
+  }
 
   for (let row = 0; row < grid.numRows; row++) {
     for (let col = 0; col < grid.numCols; col++) {
       const x = (grid.cellHeight * col) + grid.x;
       const y = (grid.cellWidth * row) + grid.y;
-      rects.push({ x: x, y: y, width: grid.cellWidth, height: grid.cellHeight });
+      const width = grid.cellWidth;
+      const height = grid.cellHeight;
+
+      data[row][col] = { x, y, width, height, ...cell };
     }
   }
 
-  return rects;
+  return data;
 }
 
 function drawGrid(grid, canvas) {
-  getRectsToDraw(grid).forEach((x) => strokeRect(x, canvas));
+  grid.data.flat().forEach((x) => strokeRect(x, canvas));
 }
 
 export { getGrid, drawGrid }

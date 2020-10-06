@@ -1,3 +1,5 @@
+import { getBall } from "./../ball"
+
 function getKeyboardMessageTable(state) {
   return {
     "ArrowRight:keydown": (message) => {
@@ -26,6 +28,7 @@ function getKeyboardMessageTable(state) {
     },
     "Enter:keydown": (message) => {
       state.keyboard.enter = true;
+      state.ball = getBall(state.canvas);
     },
     "Enter:keyup": (message) => {
       state.keyboard.enter = false;

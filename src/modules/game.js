@@ -1,6 +1,11 @@
 import { Client } from 'node-osc';
 import { getBall } from "./ball";
-import { getKeyboard, addKeyboardHandlers, handleKeyboardEvents } from "./keyboard";
+import {
+  getKeyboard,
+  addKeyboardHandlers,
+  addMouseHandler,
+  handleKeyboardEvents
+} from "./keyboard";
 import { MessageQueue } from "./messageQueue";
 import { Logger } from "./logger";
 import { getRootMessageTable } from "./message-handlers/rootMessageTable";
@@ -22,10 +27,18 @@ function getGame(options = {}) {
   game.state.debugText = "";
   game.state.clock = 0;
   game.state.grid = getGrid(2, 4);
+  game.state.rect = { 
+    x: 110, 
+    y: 110, 
+    width: 30, 
+    height: 30,
+    color: "#FF5733",
+  };
 
   game.queue = new MessageQueue();
 
   addKeyboardHandlers(game.queue);
+  addMouseHandler(game.state, game.queue);
 
   game.messageTable = getRootMessageTable(game.state);
 
@@ -43,6 +56,7 @@ function gameLoop(game) {
     { type: "osc trigger 2" },
     handleKeyboardEvents(game.state),
     { type: "draw ball" },
+    { type: "draw grid" },
     { type: "draw rect" },
     { type: "draw debug dialog" },
     { type: "update clock" },

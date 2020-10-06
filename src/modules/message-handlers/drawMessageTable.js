@@ -15,8 +15,11 @@ function getDrawMessageTable(state) {
     "draw debug dialog": (message) => {
       drawDebugDialog(state.debugText, state.canvas);
     },
-    "draw rect": (message) => {
+    "draw grid": (message) => {
       drawGrid(state.grid, state.canvas);
+    },
+    "draw rect": (message) => {
+      drawRect(state.rect, state.canvas);
     },
   };
 }

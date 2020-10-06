@@ -3,6 +3,13 @@ function getUpdateMessageTable(state) {
     "update ball": (message) => {
       state.ball = message.data.ball;
     },
+    "update rect": (message) => {
+      state.rect = message.data.rect;
+    },
+    "update grid": (message) => {
+      const { row, col } = message.data;
+      state.grid.data[row][col] = message.data.cell;
+    },
     "update debug text": (message) => {
       state.debugText = message.data.newDebugText;
     },
