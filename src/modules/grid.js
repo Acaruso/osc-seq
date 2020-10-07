@@ -1,17 +1,21 @@
 import { strokeRect } from "./util";
 
-function getGrid(numRows, numCols) {
+function getGrid(options = {}) {
+  let { numRows, numCols, cellWidth, cellHeight, x, y } = options;
+
   let grid = {};
   
-  grid.numRows = numRows;
-  grid.numCols = numCols;
-  grid.cellWidth = 50;
-  grid.cellHeight = 50;
-  grid.x = 4;
-  grid.y = 4;
+  grid.drawMessage = "draw grid";
+  grid.numRows = numRows || 2;
+  grid.numCols = numCols || 4;
+  grid.cellWidth = cellWidth || 50;
+  grid.cellHeight = cellHeight || 50;
+  grid.x = x || 0;
+  grid.y = y || 0;
   grid.width = grid.numCols * grid.cellWidth;
   grid.height = grid.numRows * grid.cellHeight;
   grid.data = getGridData(grid);
+  grid.getUpdate = (data) => { return []; };
 
   return grid;
 }
@@ -30,8 +34,8 @@ function getGridData(grid) {
 
   for (let row = 0; row < grid.numRows; row++) {
     for (let col = 0; col < grid.numCols; col++) {
-      const x = (grid.cellHeight * col) + grid.x;
-      const y = (grid.cellWidth * row) + grid.y;
+      const x = (grid.cellWidth * col) + grid.x;
+      const y = (grid.cellHeight * row) + grid.y;
       const width = grid.cellWidth;
       const height = grid.cellHeight;
 

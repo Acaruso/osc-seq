@@ -20,7 +20,7 @@ function strokeRect(rect, canvas) {
     inner.y = rect.y + (lineWidth / 2);
     inner.width = rect.width - lineWidth;
     inner.height = rect.height - lineWidth;
-    inner.color = rect.innerColor;
+    inner.color = rect.color;
     drawRect(inner, canvas);
   }
 }

@@ -1,7 +1,8 @@
 function getUpdateMessageTable(state) {
   return {
     "update ball": (message) => {
-      state.ball = message.data.ball;
+      const index = message.index;
+      state.objects[index] = message.data.ball;
     },
     "update rect": (message) => {
       state.rect = message.data.rect;
