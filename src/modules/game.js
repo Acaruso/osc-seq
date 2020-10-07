@@ -66,8 +66,8 @@ function gameLoop(game) {
     { type: "clear screen" },
     { type: "osc trigger 1" },
     { type: "osc trigger 2" },
-    getDrawObjectMessages(game.state.objects),
-    getUpdateObjectMessages(game.state),
+    getDrawMessages(game.state),
+    getUpdateMessages(game.state),
     { type: "update clock" },
     { type: "end of draw loop" },
   ];
@@ -94,18 +94,27 @@ function handleMessages(queue, messageTable, logger, logging) {
   }
 }
 
-function getDrawObjectMessages(objects) {
-  return objects.map((x) => { 
-    return { type: x.drawMessage, data: x };
-  });
-}
-
-function getUpdateObjectMessages(state) {
+function getDrawMessages(state) {
   let out = [];
 
   for (let i = 0; i < state.objects.length; i++) {
     const object = state.objects[i];
-    out.push(object.getUpdate(i, state));
+    if (object.getDrawMessage) {
+      out.push(object.getDrawMessage(i, state));
+    }
+  }
+
+  return out;
+}
+
+function getUpdateMessages(state) {
+  let out = [];
+
+  for (let i = 0; i < state.objects.length; i++) {
+    const object = state.objects[i];
+    if (object.getUpdateMessage) {
+      out.push(object.getUpdateMessage(i, state));
+    }
   }
 
   return out;

@@ -1,5 +1,4 @@
 import { drawBall } from "./../ball";
-import { drawDebugDialog } from "./../dialog";
 import { drawRect, strokeRect } from "./../util";
 import { drawGrid } from "./../grid";
 
@@ -10,19 +9,13 @@ function getDrawMessageTable(state) {
       ctx.clearRect(0, 0, state.canvas.width, state.canvas.height);
     },
     "draw ball": (message) => {
-      // drawBall(state.ball, state.canvas);
       drawBall(message.data, state.canvas);
     },
-    "draw debug dialog": (message) => {
-      drawDebugDialog(state.debugText, state.canvas);
-    },
     "draw grid": (message) => {
-      // drawGrid(state.grid, state.canvas);
       drawGrid(message.data, state.canvas);
     },
     "draw rect": (message) => {
       drawRect(message.data, state.canvas);
-      // drawRect(state.rect, state.canvas);
     },
   };
 }

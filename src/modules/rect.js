@@ -1,14 +1,34 @@
+import { isCoordInsideRect } from "./util";
+
 function getRect(options = {}) {
   const { x, y, width, height, color } = options;
   
   return {
-    drawMessage: "draw rect",
     x,
     y,
     width,
     height,
     color,
-    getUpdate: (data) => { return []; },
+    getDrawMessage: (key, state) => {
+      const rect = state.objects[key];
+      return { type: "draw rect", data: rect };
+    },
+    detectClick: (key, coord, state) => {
+      const rect = state.objects[key];
+      return isCoordInsideRect(coord, rect);
+    },
+    onClick: (key, state) => {
+      const rect = state.objects[key];
+      let newRect = { ...rect };
+
+      if (rect.color === "#FF5733") {
+        newRect.color = "#000000";
+      } else {
+        newRect.color = "#FF5733";
+      }
+
+      return { type: "update state", key, data: newRect };
+    },
   };
 }
 

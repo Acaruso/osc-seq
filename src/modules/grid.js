@@ -5,7 +5,6 @@ function getGrid(options = {}) {
 
   let grid = {};
   
-  grid.drawMessage = "draw grid";
   grid.numRows = numRows || 2;
   grid.numCols = numCols || 4;
   grid.cellWidth = cellWidth || 50;
@@ -15,7 +14,10 @@ function getGrid(options = {}) {
   grid.width = grid.numCols * grid.cellWidth;
   grid.height = grid.numRows * grid.cellHeight;
   grid.data = getGridData(grid);
-  grid.getUpdate = (data) => { return []; };
+  grid.getDrawMessage = (key, state) => {
+    const grid = state.objects[key];
+    return { type: "draw grid", data: grid };
+  };
 
   return grid;
 }
