@@ -4,6 +4,9 @@ function getUpdateMessageTable(state) {
       const key = message.key;
       state.objects[key] = message.data;
     },
+    "update state w/ selector": (message) => {
+      message.selector(state)(message.data);
+    },
     "update ball": (message) => {
       const index = message.key;
       state.objects[index] = message.data;

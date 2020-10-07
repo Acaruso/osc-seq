@@ -17,7 +17,7 @@ function getRect(options = {}) {
       const rect = state.objects[key];
       return isCoordInsideRect(coord, rect);
     },
-    onClick: (key, state) => {
+    onClick: (key, coord, state) => {
       const rect = state.objects[key];
       let newRect = { ...rect };
 

@@ -1,5 +1,3 @@
-import { isCoordInsideRect } from "./util";
-
 function getKeyboard() {
   return {
     right: false,
@@ -39,7 +37,7 @@ function handleMouseClick(event, state) {
     if (object.detectClick) {
       const isClicked = object.detectClick(i, coord, state);
       if (isClicked && object.onClick) {
-        const res = object.onClick(i, state);
+        const res = object.onClick(i, coord, state);
         out.push(res);
       }
     }
@@ -47,39 +45,6 @@ function handleMouseClick(event, state) {
 
   return out;
 }
-
-// function handleMouseClick(event, state, queue) {
-//   const coord = getMouseCoord(event, state.canvas);
-
-//   if (isCoordInsideRect(coord, state.rect)) {
-//     let newRect = { ...state.rect };
-
-//     if (state.rect.color === "#FF5733") {
-//       newRect.color = "#000000";
-//       queue.push({ type: "update rect", data: { rect: newRect } });
-//     } else {
-//       newRect.color = "#FF5733";
-//       queue.push({ type: "update rect", data: { rect: newRect } });
-//     }
-//   }
-
-//   if (isCoordInsideRect(coord, state.grid)) {
-//     for (let row = 0; row < state.grid.numRows; row++) {
-//       for (let col = 0; col < state.grid.numCols; col++) {
-//         let cell = state.grid.data[row][col];
-
-//         if (isCoordInsideRect(coord, cell)) {
-//           let newCell = { ...cell };
-//           newCell.fill = !cell.fill;
-//           queue.push({ 
-//             type: "update grid", 
-//             data: { row, col, cell: newCell } 
-//           });
-//         }
-//       }
-//     }
-//   }
-// }
 
 function getMouseCoord(event, canvas) {
   return {

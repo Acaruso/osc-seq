@@ -1,4 +1,5 @@
-import { strokeRect } from "./util";
+import { strokeRect, isCoordInsideRect } from "./util";
+import { getRect } from "./rect";
 
 function getGrid(options = {}) {
   let { numRows, numCols, cellWidth, cellHeight, x, y } = options;
@@ -14,19 +15,47 @@ function getGrid(options = {}) {
   grid.width = grid.numCols * grid.cellWidth;
   grid.height = grid.numRows * grid.cellHeight;
   grid.data = getGridData(grid);
+
   grid.getDrawMessage = (key, state) => {
     const grid = state.objects[key];
     return { type: "draw grid", data: grid };
+  };
+  grid.detectClick = (key, coord, state) => {
+    const rect = state.objects[key];
+    return isCoordInsideRect(coord, rect);
+  };
+  grid.onClick = (key, coord, state) => {
+    let out = [];
+    const grid = state.objects[key];
+
+    for (let row = 0; row < grid.numRows; row++) {
+      for (let col = 0; col < grid.numCols; col++) {
+        let cell = grid.data[row][col];
+
+        if (isCoordInsideRect(coord, cell)) {
+          let newCell = { ...cell };
+          newCell.fill = !cell.fill;
+          out.push({
+            type: "update state w/ selector",
+            data: newCell,
+            selector: (state) => {
+              return (newVal) => {
+                state.objects[key].data[row][col] = newVal;
+              }
+            },
+          });
+        }
+      }
+    }
+
+    return out;
   };
 
   return grid;
 }
 
 function getGridData(grid) {
-  const cell = {
-    fill: true,
-    color: "#FF5733",
-  };
+  const color = "#FF5733";
 
   let data = new Array(grid.numRows);
   
@@ -41,7 +70,13 @@ function getGridData(grid) {
       const width = grid.cellWidth;
       const height = grid.cellHeight;
 
-      data[row][col] = { x, y, width, height, ...cell };
+      data[row][col] = getRect({ x, y, width, height, color });
+      data[row][col].fill = true;
+
+      // data[row][col].rect = getRect({ x, y, width, height, color });
+      // data[row][col].fill = true;
+
+      // data[row][col] = { x, y, width, height, ...cell };
     }
   }
 
