@@ -19,31 +19,6 @@ function addKeyboardHandlers(queue) {
   document.addEventListener("keyup", keyHandler, false);
 }
 
-function handleKeyboardEvents(state) {
-  let { keyboard, ball } = state;
-  let messages = [];
-
-  let newBall = { ...ball };
-
-  if (keyboard.right) {
-    newBall.x += 2;
-  }
-  else if (keyboard.left) {
-    newBall.x -= 2;
-  }
-  else if (keyboard.up) {
-    newBall.y -= 2;
-  }
-  else if (keyboard.down) {
-    newBall.y += 2;
-  } else {
-    return messages;
-  }
-
-  messages.push({ type: "update ball", data: { ball: newBall } });
-  return messages;
-}
-
 function addMouseHandler(state, queue) {
   document.addEventListener(
     "mousedown", 
@@ -92,4 +67,4 @@ function getMouseCoord(event, canvas) {
   };
 }
 
-export { getKeyboard, addKeyboardHandlers, addMouseHandler, handleKeyboardEvents };
+export { getKeyboard, addKeyboardHandlers, addMouseHandler };

@@ -4,12 +4,10 @@ import {
   getKeyboard,
   addKeyboardHandlers,
   addMouseHandler,
-  handleKeyboardEvents
 } from "./keyboard";
 import { MessageQueue } from "./messageQueue";
 import { Logger } from "./logger";
 import { getRootMessageTable } from "./message-handlers/rootMessageTable";
-import { getMessageProducersTable } from "./message-producers/messageProducers";
 import { getGrid } from './grid';
 import { getRect } from "./rect";
 import { getTimeDivisions } from './time';
@@ -55,7 +53,6 @@ function getGame(options = {}) {
   addMouseHandler(game.state, game.queue);
 
   game.messageTable = getRootMessageTable(game.state);
-  game.messageProducersTable = getMessageProducersTable(game.state);
 
   return game;
 }
@@ -69,9 +66,7 @@ function gameLoop(game) {
     { type: "clear screen" },
     { type: "osc trigger 1" },
     { type: "osc trigger 2" },
-    // handleKeyboardEvents(game.state),
     getDrawObjectMessages(game.state.objects),
-    // getUpdateObjectMessages(game.state, game.messageProducersTable),
     getUpdateObjectMessages(game.state),
     { type: "update clock" },
     { type: "end of draw loop" },
@@ -108,26 +103,12 @@ function getDrawObjectMessages(objects) {
 function getUpdateObjectMessages(state) {
   let out = [];
 
-  // for (const object of state.objects) {
   for (let i = 0; i < state.objects.length; i++) {
     const object = state.objects[i];
     out.push(object.getUpdate(i, state));
   }
-  // console.log(out)
 
   return out;
 }
-
-// function getUpdateObjectMessages(state, messageProducersTable) {
-//   let out = [];
-
-//   for (const object of state.objects) {
-//     if (messageProducersTable[object.updateMessage]) {
-//       const res = messageProducersTable[object.updateMessage](state);
-//       out.push(res);
-//     }
-//   }
-//   return out;
-// }
 
 export { getGame, startGameLoop };

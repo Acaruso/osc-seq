@@ -1,19 +1,14 @@
 function getBall(canvas) {
-  const ball = {
+  return {
     drawMessage: "draw ball",
-    updateMessage: "get updated ball",
     x: canvas.width / 2,
     y: canvas.height - 30,
     radius: 10,
-    getUpdate: function (i, state) {
-      const ball = state.objects[i];
-      const res = getUpdatedBall(ball, i, state);
-      return res;
+    getUpdate: (key, state) => {
+      const { ball, keyboard } = selector(key, state);
+      return getUpdatedBall(key, ball, keyboard);
     },
   };
-
-  console.log(ball)
-  return ball;
 }
 
 function drawBall(ball, canvas) {
@@ -25,10 +20,14 @@ function drawBall(ball, canvas) {
   ctx.closePath();
 }
 
-function getUpdatedBall(ball, i, state) {
+function selector(key, state) {
+  const ball = state.objects[key];
   const { keyboard } = state;
-  let newBall = { ...ball };
+  return { ball, keyboard };
+}
 
+function getUpdatedBall(key, ball, keyboard) {
+  let newBall = { ...ball };
   if (keyboard.right) {
     newBall.x += 2;
   }
@@ -43,12 +42,7 @@ function getUpdatedBall(ball, i, state) {
   } else {
     return [];
   }
-
-  // messages.push({ type: "update ball", data: { ball: newBall } });
-  // return messages;
-
-  return { type: "update ball", index: i, data: { ball: newBall } };
+  return { type: "update state", key, data: newBall };
 }
 
-
-export { getBall, drawBall, getUpdatedBall };
+export { getBall, drawBall };
