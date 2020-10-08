@@ -4,7 +4,8 @@
   "description": "osc-seq",
   "main": "src/main.js",
   "scripts": {
-    "start": "webpack --mode development && electron ."
+    "start": "webpack --mode development && electron .",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,7 @@
     "babel-loader": "^8.1.0",
     "babel-preset-env": "^1.7.0",
     "electron": "^10.1.1",
+    "jest": "^26.4.2",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11"
   },
