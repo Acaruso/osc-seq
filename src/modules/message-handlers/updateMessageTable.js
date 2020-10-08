@@ -18,9 +18,6 @@ function getUpdateMessageTable(state) {
       const { row, col } = message.data;
       state.grid.data[row][col] = message.data.cell;
     },
-    "update debug text": (message) => {
-      state.debugText = message.data.newDebugText;
-    },
     "update clock": (message) => {
       state.clock = (state.clock + 1) % 4096;
     },
