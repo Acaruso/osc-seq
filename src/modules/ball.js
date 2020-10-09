@@ -3,8 +3,9 @@ function getBall(canvas) {
     x: canvas.width / 2,
     y: canvas.height - 30,
     radius: 10,
-    getDrawMessage: (key, state) => {
-      const ball = state.objects[key];
+    getDrawMessage: (keys, state) => {
+      const [ tableId, objectId ] = keys;
+      const ball = state.objects.get(tableId).get(objectId);
       return { type: "draw ball", data: ball };
     },
     getUpdateMessage: (key, state) => {

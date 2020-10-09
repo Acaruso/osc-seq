@@ -20,16 +20,16 @@ function getGame(options = {}) {
   game.state.keyboard = getKeyboard();
   game.state.clock = 0;
 
-  game.objects = new Table("Tables");
-  game.objects.push(new Table("Balls"));
-  game.objects.push(new Table("Rects"));
-  game.objects.push(new Table("Grids"));
+  game.state.objects = new Table("Tables");
+  game.state.objects.push(new Table("Balls"));
+  game.state.objects.push(new Table("Rects"));
+  game.state.objects.push(new Table("Grids"));
 
-  game.objects
+  game.state.objects
     .find((x) => x.name === "Balls")
     .push(getBall(game.state.canvas));
 
-  console.log(game.objects);
+  console.log(game.state.objects);
 
   // game.state.objects = [
   //   getBall(game.state.canvas),
@@ -103,10 +103,11 @@ function handleMessages(queue, messageTable, logger, logging) {
 function getDrawMessages(state) {
   let out = [];
 
-  for (let i = 0; i < state.objects.length; i++) {
-    const object = state.objects[i];
-    if (object.getDrawMessage) {
-      out.push(object.getDrawMessage(i, state));
+  for (const tableId of state.objects.ids) {
+    const table = state.objects.rows[tableId];
+    for (const objectId of table.ids) {
+      const obj = table.rows[objectId];
+      out.push(obj.getDrawMessage([tableId, objectId], state));
     }
   }
 
