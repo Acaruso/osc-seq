@@ -8,8 +8,8 @@ function getBall(canvas) {
       const ball = state.objects.get(tableId).get(objectId);
       return { type: "draw ball", data: ball };
     },
-    getUpdateMessage: (key, state) => {
-      return getUpdateBallMessage(selector(key, state));
+    getUpdateMessage: (keys, state) => {
+      return getUpdateBallMessage(selector(keys, state));
     },
   };
 }
@@ -23,15 +23,15 @@ function drawBall(ball, canvas) {
   ctx.closePath();
 }
 
-function selector(key, state) {
+function selector(keys, state) {
   return {
-    key: key,
-    ball: state.objects[key],
+    keys: keys,
+    ball: state.objects.get(tableId).get(objectId),
     keyboard: state.keyboard,
   };
 }
 
-function getUpdateBallMessage({ key, ball, keyboard }) {
+function getUpdateBallMessage({ keys, ball, keyboard }) {
   let newBall = { ...ball };
 
   if (keyboard.right) {
@@ -49,7 +49,7 @@ function getUpdateBallMessage({ key, ball, keyboard }) {
     return [];
   }
 
-  return { type: "update state", key, data: newBall };
+  return { type: "update state", keys, data: newBall };
 }
 
 export { getBall, drawBall };

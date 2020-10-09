@@ -117,10 +117,11 @@ function getDrawMessages(state) {
 function getUpdateMessages(state) {
   let out = [];
 
-  for (let i = 0; i < state.objects.length; i++) {
-    const object = state.objects[i];
-    if (object.getUpdateMessage) {
-      out.push(object.getUpdateMessage(i, state));
+  for (const tableId of state.objects.ids) {
+    const table = state.objects.rows[tableId];
+    for (const objectId of table.ids) {
+      const obj = table.rows[objectId];
+      out.push(obj.getUpdateMessage([tableId, objectId], state));
     }
   }
 

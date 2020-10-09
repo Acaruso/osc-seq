@@ -1,8 +1,8 @@
 function getUpdateMessageTable(state) {
   return {
     "update state": (message) => {
-      const key = message.key;
-      state.objects[key] = message.data;
+      const [ tableId, objectId ] = message.keys;
+      state.objects.rows[tableId].rows[objectId] = message.data;
     },
     "update state w/ selector": (message) => {
       message.selector(state)(message.data);
