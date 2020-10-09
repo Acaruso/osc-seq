@@ -24,6 +24,7 @@ function drawBall(ball, canvas) {
 }
 
 function selector(keys, state) {
+  const [ tableId, objectId ] = keys;
   return {
     keys: keys,
     ball: state.objects.get(tableId).get(objectId),
