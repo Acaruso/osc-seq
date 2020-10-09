@@ -17,6 +17,9 @@ function getDrawMessageTable(state) {
     "draw rect": (message) => {
       drawRect(message.data, state.canvas);
     },
+    "stroke rect": (message) => {
+      strokeRect(message.data, state.canvas);
+    },
   };
 }
 

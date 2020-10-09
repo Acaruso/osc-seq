@@ -10,7 +10,9 @@ class Table {
     this.rows[this.nextId] = newRow;
     this.rows[this.nextId].id = this.nextId;
     this.ids.push(this.nextId);
+    const insertedId = this.nextId;
     this.nextId++;
+    return insertedId;
   }
 
   get(id) {

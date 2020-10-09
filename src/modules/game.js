@@ -5,7 +5,8 @@ import { Logger } from "./logger";
 import { getRootMessageTable } from "./message-handlers/rootMessageTable";
 import { getTimeDivisions } from './time';
 import { Table } from "./table";
-import { getBall } from './ball';
+import { createBall } from './ball';
+import { createGrid } from "./grid";
 
 function getGame(options = {}) {
   let game = {};
@@ -25,10 +26,8 @@ function getGame(options = {}) {
   game.state.objects.push(new Table("Rects"));
   game.state.objects.push(new Table("Grids"));
 
-  game.state.objects
-    .find((x) => x.name === "Balls")
-    .push(getBall(game.state.canvas));
-
+  createObjects(game);
+  console.log('objects ----------------------')
   console.log(game.state.objects);
 
   // game.state.objects = [
@@ -61,6 +60,16 @@ function getGame(options = {}) {
   game.messageTable = getRootMessageTable(game.state);
 
   return game;
+}
+
+function createObjects(game) {
+  game.state.objects = new Table("Tables");
+  game.state.objects.push(new Table("Balls"));
+  game.state.objects.push(new Table("Rects"));
+  game.state.objects.push(new Table("Grids"));
+
+  createBall(game.state);
+  createGrid(game.state);
 }
 
 function startGameLoop(game) {
@@ -107,7 +116,9 @@ function getDrawMessages(state) {
     const table = state.objects.rows[tableId];
     for (const objectId of table.ids) {
       const obj = table.rows[objectId];
-      out.push(obj.getDrawMessage([tableId, objectId], state));
+      if (obj.getDrawMessage) {
+        out.push(obj.getDrawMessage([tableId, objectId], state));
+      }
     }
   }
 
@@ -121,7 +132,9 @@ function getUpdateMessages(state) {
     const table = state.objects.rows[tableId];
     for (const objectId of table.ids) {
       const obj = table.rows[objectId];
-      out.push(obj.getUpdateMessage([tableId, objectId], state));
+      if (obj.getUpdateMessage) {
+        out.push(obj.getUpdateMessage([tableId, objectId], state));
+      }
     }
   }
 

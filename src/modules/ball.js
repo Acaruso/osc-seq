@@ -1,4 +1,11 @@
-function getBall(canvas) {
+function createBall(state) {
+  const ball = createBallData(state.canvas);
+  state.objects
+    .find((x) => x.name === "Balls")
+    .push(ball);
+}
+
+function createBallData(canvas) {
   return {
     x: canvas.width / 2,
     y: canvas.height - 30,
@@ -53,4 +60,4 @@ function getUpdateBallMessage({ keys, ball, keyboard }) {
   return { type: "update state", keys, data: newBall };
 }
 
-export { getBall, drawBall };
+export { createBall, drawBall };
