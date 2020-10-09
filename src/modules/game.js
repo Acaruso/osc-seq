@@ -1,16 +1,11 @@
 import { Client } from 'node-osc';
-import { getBall } from "./ball";
-import {
-  getKeyboard,
-  addKeyboardHandlers,
-  addMouseHandler,
-} from "./keyboard";
+import { getKeyboard, addKeyboardHandlers, addMouseHandler } from "./keyboard";
 import { MessageQueue } from "./messageQueue";
 import { Logger } from "./logger";
 import { getRootMessageTable } from "./message-handlers/rootMessageTable";
-import { getGrid } from './grid';
-import { getRect } from "./rect";
 import { getTimeDivisions } from './time';
+import { Table } from "./table";
+import { getBall } from './ball';
 
 function getGame(options = {}) {
   let game = {};
@@ -24,26 +19,35 @@ function getGame(options = {}) {
   game.state.canvas = document.getElementById("myCanvas");
   game.state.keyboard = getKeyboard();
   game.state.clock = 0;
-  
-  game.state.objects = [
-    getBall(game.state.canvas),
-    getGrid({ numRows: 2, numCols: 4, x: 5, y: 5 }),
-    getRect({
-      x: 110,
-      y: 110,
-      width: 30,
-      height: 30,
-      color: "#FF5733",
-    }),
-    getGrid({
-      numRows: 2,
-      numCols: 4,
-      cellWidth: 30,
-      cellHeight: 20,
-      x: 200,
-      y: 200,
-    }),
-  ];
+
+  game.state.objects = new Table("Tables");
+  game.state.objects.push(new Table("Balls"));
+
+  game.state.objects
+    .find((x) => x.name === "Balls")
+    .push(getBall(game.state.canvas));
+
+  console.log(game.state.objects);
+
+  // game.state.objects = [
+  //   getBall(game.state.canvas),
+  //   getGrid({ numRows: 2, numCols: 4, x: 5, y: 5 }),
+  //   getRect({
+  //     x: 110,
+  //     y: 110,
+  //     width: 30,
+  //     height: 30,
+  //     color: "#FF5733",
+  //   }),
+  //   getGrid({
+  //     numRows: 2,
+  //     numCols: 4,
+  //     cellWidth: 30,
+  //     cellHeight: 20,
+  //     x: 200,
+  //     y: 200,
+  //   }),
+  // ];
 
   game.state.time = getTimeDivisions(120);
 
