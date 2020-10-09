@@ -20,14 +20,16 @@ function getGame(options = {}) {
   game.state.keyboard = getKeyboard();
   game.state.clock = 0;
 
-  game.state.objects = new Table("Tables");
-  game.state.objects.push(new Table("Balls"));
+  game.objects = new Table("Tables");
+  game.objects.push(new Table("Balls"));
+  game.objects.push(new Table("Rects"));
+  game.objects.push(new Table("Grids"));
 
-  game.state.objects
+  game.objects
     .find((x) => x.name === "Balls")
     .push(getBall(game.state.canvas));
 
-  console.log(game.state.objects);
+  console.log(game.objects);
 
   // game.state.objects = [
   //   getBall(game.state.canvas),
