@@ -54,6 +54,35 @@ function getUpdateBallMessage({ key, ball, keyboard }) {
   return { type: "update state", key, data: newBall };
 }
 
+function createUpdateBallPositionMessage(row) {
+  let newPosition = {};
+  newPosition.x = row.x;
+  newPosition.y = row.y;
+
+  if (row.right) {
+    console.log('right')
+    newPosition.x += 2;
+  }
+  else if (row.left) {
+    newPosition.x -= 2;
+  }
+  else if (row.up) {
+    newPosition.y -= 2;
+  }
+  else if (row.down) {
+    newPosition.y += 2;
+  } else {
+    return [];
+  }
+
+  return {
+    type: "update component",
+    component: "position",
+    entityId: row.entityId,
+    data: newPosition
+  };
+}
+
 function createBallEntity(state) {
   const newEntityId = addEntity({ name: "ball" }, state.entities);
 
@@ -69,16 +98,16 @@ function createBallEntity(state) {
   );
   addComponent(
     { }, 
-    state.components.controllable,
+    state.components.drawable,
     newEntityId,
   );
   addComponent(
     { }, 
-    state.components.drawable,
+    state.components.controllable,
     newEntityId,
   );
 
   return newEntityId;
 }
 
-export { getBall, drawBall, createBallEntity };
+export { getBall, drawBall, createBallEntity, createUpdateBallPositionMessage };

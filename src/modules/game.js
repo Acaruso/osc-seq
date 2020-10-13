@@ -1,5 +1,5 @@
 import { Client } from 'node-osc';
-import { getBall, createBallEntity } from "./ball";
+import { getBall, createBallEntity, createUpdateBallPositionMessage } from "./ball";
 import {
   getKeyboard,
   addKeyboardHandlers,
@@ -13,6 +13,7 @@ import { getRect } from "./rect";
 import { getTimeDivisions } from './time';
 import { addEntity } from "./entity";
 import { addComponent, join } from "./component";
+import { createInputMessageTable } from './message-handlers/inputMessageTable';
 
 function getGame(options = {}) {
   let game = {};
@@ -35,10 +36,12 @@ function getGame(options = {}) {
     controllable: new Array(game.maxEntities).fill(null),
     ball: new Array(game.maxEntities).fill(null),
     drawable: new Array(game.maxEntities).fill(null),
-    userInput: new Array(game.maxEntities).fill(null),
+    userInput: getKeyboard(),
   };
 
   createBallEntity(game.state);
+
+  game.inputQueue = new MessageQueue();
 
   // addEntity({ name: "ball" }, game.state.entities);
   // addComponent(
@@ -90,10 +93,15 @@ function getGame(options = {}) {
 
   game.queue = new MessageQueue();
 
-  addKeyboardHandlers(game.queue);
+  addKeyboardHandlers(game.inputQueue);
   addMouseHandler(game.state, game.queue);
 
   game.messageTable = getRootMessageTable(game.state);
+
+  game.inputMessageTable = createInputMessageTable(game.state);
+
+  // game.inputQueue.push({test: "test"});
+  // console.log(game.inputQueue);
 
   return game;
 }
@@ -103,16 +111,45 @@ function startGameLoop(game) {
 }
 
 function gameLoop(game) {
-  let messages = [
+  let messages = [];
+
+  // if (game.inputQueue.messages.length !== 0) {
+  //   console.log('!!!!!!!!!!!')
+  //   console.log(game.inputQueue.messages.length)
+  //   console.log(game.inputQueue.messages)
+  // }
+
+  let m = handleInputMessages(
+    game.inputQueue,
+    game.inputMessageTable,
+    game.logger,
+    game.logging
+  );
+
+  game.queue.push(m);
+
+  handleMessages(
+    game.queue, 
+    game.messageTable, 
+    game.logger, 
+    game.logging
+  );
+
+  if (game.state.components.userInput.right) {
+    console.log('RIGHT')
+  }
+
+  messages.push(
     { type: "clear screen" },
     { type: "osc trigger 1" },
     { type: "osc trigger 2" },
+    controlSystem(game.state),
     drawSystem(game.state),
     // getDrawMessages(game.state),
     // getUpdateMessages(game.state),
     { type: "update clock" },
     { type: "end of draw loop" },
-  ];
+  );
 
   game.queue.push(messages);
 
@@ -136,17 +173,49 @@ function handleMessages(queue, messageTable, logger, logging) {
   }
 }
 
+function handleInputMessages(queue, messageTable, logger, logging) {
+  let out = [];
+  let message = null;
+  while (message = queue.messages.shift()) {
+    if (messageTable[message.type]) {
+      let res = messageTable[message.type](message);
+      out.push(res);
+      if (logging) {
+        logger.log(JSON.stringify(message));
+      }
+    }
+  }
+  return out;
+}
+
 function drawSystem(state) {
   let out = [];
   
   let drawableBalls = join(
+    ["position", "ball", "drawable", "controllable", "userInput"], 
     state.entities, 
-    ["position", "ball", "drawable"], 
     state.components
   );
 
   for (const ball of drawableBalls) {
     out.push({ type: "draw ball", data: ball });
+  }
+
+  return out;
+}
+
+function controlSystem(state) {
+  let out = [];
+
+  let controllableBalls = join(
+    ["position", "ball", "controllable", "userInput"], 
+    state.entities, 
+    state.components
+  );
+
+  for (const ball of controllableBalls) {
+    const msg = createUpdateBallPositionMessage(ball);
+    out.push(msg);
   }
 
   return out;

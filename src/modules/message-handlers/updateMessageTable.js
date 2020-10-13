@@ -7,6 +7,22 @@ function getUpdateMessageTable(state) {
     "update state w/ selector": (message) => {
       message.selector(state)(message.data);
     },
+    "update component": (message) => {
+      console.log('update component')
+      console.log(message)
+      const component = message.component;
+      const entityId = message.entityId;
+
+      // entityId === -1 is singleton component
+      // is there some better way to represent this?
+      if (entityId === -1) {
+        state.components[component] = message.data;
+        console.log(message)
+        console.log(state.components)
+      } else {
+        state.components[component][entityId] = message.data;
+      }
+    },
     "update ball": (message) => {
       const index = message.key;
       state.objects[index] = message.data;
