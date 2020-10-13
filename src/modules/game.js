@@ -1,5 +1,5 @@
 import { Client } from 'node-osc';
-import { getBall } from "./ball";
+import { getBall, createBallEntity } from "./ball";
 import {
   getKeyboard,
   addKeyboardHandlers,
@@ -11,6 +11,8 @@ import { getRootMessageTable } from "./message-handlers/rootMessageTable";
 import { getGrid } from './grid';
 import { getRect } from "./rect";
 import { getTimeDivisions } from './time';
+import { addEntity } from "./entity";
+import { addComponent, join } from "./component";
 
 function getGame(options = {}) {
   let game = {};
@@ -24,7 +26,46 @@ function getGame(options = {}) {
   game.state.canvas = document.getElementById("myCanvas");
   game.state.keyboard = getKeyboard();
   game.state.clock = 0;
-  
+
+  game.maxEntities = 1024;
+
+  game.state.entities = [];
+  game.state.components = {
+    position: new Array(game.maxEntities).fill(null),
+    controllable: new Array(game.maxEntities).fill(null),
+    ball: new Array(game.maxEntities).fill(null),
+    drawable: new Array(game.maxEntities).fill(null),
+    userInput: new Array(game.maxEntities).fill(null),
+  };
+
+  createBallEntity(game.state);
+
+  // addEntity({ name: "ball" }, game.state.entities);
+  // addComponent(
+  //   { x: 0, y: 0 }, 
+  //   game.state.components.position,
+  //   "ball",
+  //   game.state.entities, 
+  // );
+  // addComponent(
+  //   { radius: 10 }, 
+  //   game.state.components.ball,
+  //   "ball",
+  //   game.state.entities, 
+  // );
+  // addComponent(
+  //   { }, 
+  //   game.state.components.controllable,
+  //   "ball",
+  //   game.state.entities, 
+  // );
+  // addComponent(
+  //   { }, 
+  //   game.state.components.drawable,
+  //   "ball",
+  //   game.state.entities, 
+  // );
+
   game.state.objects = [
     getBall(game.state.canvas),
     getGrid({ numRows: 2, numCols: 4, x: 5, y: 5 }),
@@ -66,8 +107,9 @@ function gameLoop(game) {
     { type: "clear screen" },
     { type: "osc trigger 1" },
     { type: "osc trigger 2" },
-    getDrawMessages(game.state),
-    getUpdateMessages(game.state),
+    drawSystem(game.state),
+    // getDrawMessages(game.state),
+    // getUpdateMessages(game.state),
     { type: "update clock" },
     { type: "end of draw loop" },
   ];
@@ -92,6 +134,22 @@ function handleMessages(queue, messageTable, logger, logging) {
       }
     }
   }
+}
+
+function drawSystem(state) {
+  let out = [];
+  
+  let drawableBalls = join(
+    state.entities, 
+    ["position", "ball", "drawable"], 
+    state.components
+  );
+
+  for (const ball of drawableBalls) {
+    out.push({ type: "draw ball", data: ball });
+  }
+
+  return out;
 }
 
 function getDrawMessages(state) {

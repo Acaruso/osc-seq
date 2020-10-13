@@ -1,3 +1,6 @@
+import { addEntity } from "./entity";
+import { addComponent, join } from "./component";
+
 function getBall(canvas) {
   return {
     x: canvas.width / 2,
@@ -51,4 +54,31 @@ function getUpdateBallMessage({ key, ball, keyboard }) {
   return { type: "update state", key, data: newBall };
 }
 
-export { getBall, drawBall };
+function createBallEntity(state) {
+  const newEntityId = addEntity({ name: "ball" }, state.entities);
+
+  addComponent(
+    { x: 0, y: 0 }, 
+    state.components.position,
+    newEntityId,
+  );
+  addComponent(
+    { radius: 10 }, 
+    state.components.ball,
+    newEntityId,
+  );
+  addComponent(
+    { }, 
+    state.components.controllable,
+    newEntityId,
+  );
+  addComponent(
+    { }, 
+    state.components.drawable,
+    newEntityId,
+  );
+
+  return newEntityId;
+}
+
+export { getBall, drawBall, createBallEntity };
