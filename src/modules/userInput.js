@@ -1,4 +1,4 @@
-function getKeyboard() {
+function createUserInput() {
   return {
     right: false,
     left: false,
@@ -37,4 +37,4 @@ function getMouseCoord(event, canvas) {
   };
 }
 
-export { getKeyboard, addKeyboardHandlers, addMouseHandler };
+export { createUserInput, addKeyboardHandlers, addMouseHandler };

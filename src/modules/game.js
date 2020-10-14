@@ -1,10 +1,10 @@
 import { Client } from 'node-osc';
 import { createBallEntity, createUpdateBallPositionMessage } from "./ball";
 import {
-  getKeyboard,
+  createUserInput,
   addKeyboardHandlers,
   addMouseHandler,
-} from "./keyboard";
+} from "./userInput";
 import { MessageQueue } from "./messageQueue";
 import { Logger } from "./logger";
 import { getRootMessageTable } from "./message-handlers/rootMessageTable";
@@ -24,7 +24,6 @@ function getGame(options = {}) {
 
   game.state.oscClient = new Client('127.0.0.1', 3333);
   game.state.canvas = document.getElementById("myCanvas");
-  game.state.keyboard = getKeyboard();
   game.state.clock = 0;
 
   game.maxEntities = 1024;
@@ -37,7 +36,7 @@ function getGame(options = {}) {
     rect: new Array(game.maxEntities).fill(null),
     drawable: new Array(game.maxEntities).fill(null),
     clickable: new Array(game.maxEntities).fill(null),
-    userInput: getKeyboard(),
+    userInput: createUserInput(),
   };
 
   createBallEntity(game.state);
@@ -78,6 +77,7 @@ function gameLoop(game) {
   // seems useful to keep userInput as a component that can be updated via message
   // but for user input stage of processing, just write directly to it
   // --> no messages / queues 
+  // actually maybe keep queue but in handler fn, just update userInput directly
 
   let resultsOfInputMessages = handleInputMessages(
     game.inputQueue,
