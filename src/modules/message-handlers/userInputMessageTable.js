@@ -1,82 +1,111 @@
+import { getComponent, updateComponent } from "./../entityComponent";
+
 function createUserInputMessageTable(state) {
   return {
     "ArrowRight:keydown": (message) => {
+      // let newUserInput = { 
+      //   ...getComponent(state.components.userInput),
+      //   right: true
+      // };
       let newUserInput = { 
-        ...state.components.userInput,
+        ...state.components.userInput.data[0],
         right: true
       };
-      state.components.userInput = newUserInput;
+
+      state.components.userInput.data[0] = newUserInput;
+
+      // state.components.userInput.data[0] = {blah: "asdf"};
+
+      // updateComponent(state.components.userInput, newUserInput);
+      console.log('arrow right')
+      console.log(newUserInput)
+      console.log(state.components.userInput)
+      console.log(state.components.userInput.data)
+      console.log(state.components.userInput.data[0])
+      // state.components.userInput = newUserInput;
     },
     "ArrowRight:keyup": (message) => {
-      let newUserInput = { 
-        ...state.components.userInput,
+      let newUserInput = {
+        ...getComponent(state.components.userInput),
         right: false
       };
-      state.components.userInput = newUserInput;
+      updateComponent(state.components.userInput, newUserInput);
+      // state.components.userInput = newUserInput;
     },
     "ArrowLeft:keydown": (message) => {
       let newUserInput = { 
-        ...state.components.userInput,
+        ...getComponent(state.components.userInput),
         left: true
       };
-      state.components.userInput = newUserInput;
+      updateComponent(state.components.userInput, newUserInput);
+      // state.components.userInput = newUserInput;
     },
     "ArrowLeft:keyup": (message) => {
       let newUserInput = { 
-        ...state.components.userInput,
+        ...getComponent(state.components.userInput),
         left: false
       };
-      state.components.userInput = newUserInput;
+      updateComponent(state.components.userInput, newUserInput);
+      // state.components.userInput = newUserInput;
     },
     "ArrowUp:keydown": (message) => {
       let newUserInput = { 
-        ...state.components.userInput,
+        ...getComponent(state.components.userInput),
         up: true
       };
-      state.components.userInput = newUserInput;
+      updateComponent(state.components.userInput, newUserInput);
+      // state.components.userInput = newUserInput;
     },
     "ArrowUp:keyup": (message) => {
       let newUserInput = { 
-        ...state.components.userInput,
+        ...getComponent(state.components.userInput),
         up: false
       };
-      state.components.userInput = newUserInput;
+      updateComponent(state.components.userInput, newUserInput);
+      // state.components.userInput = newUserInput;
     },
     "ArrowDown:keydown": (message) => {
       let newUserInput = { 
-        ...state.components.userInput,
+        ...getComponent(state.components.userInput),
         down: true
       };
-      state.components.userInput = newUserInput;
+      updateComponent(state.components.userInput, newUserInput);
+      // state.components.userInput = newUserInput;
     },
     "ArrowDown:keyup": (message) => {
       let newUserInput = { 
-        ...state.components.userInput,
+        ...getComponent(state.components.userInput),
         down: false
       };
-      state.components.userInput = newUserInput;
+      updateComponent(state.components.userInput, newUserInput);
+      // state.components.userInput = newUserInput;
     },
     "Enter:keydown": (message) => {
+      console.log(state);
       let newUserInput = { 
-        ...state.components.userInput,
+        ...getComponent(state.components.userInput),
         enter: true
       };
-      state.components.userInput = newUserInput;
+      updateComponent(state.components.userInput, newUserInput);
+      // state.components.userInput = newUserInput;
     },
     "Enter:keyup": (message) => {
       let newUserInput = { 
-        ...state.components.userInput,
+        ...getComponent(state.components.userInput),
         enter: false
       };
-      state.components.userInput = newUserInput;
+      updateComponent(state.components.userInput, newUserInput);
+      // state.components.userInput = newUserInput;
     },
     "mouse click": (message) => {
       let newUserInput = { 
-        ...state.components.userInput,
+        ...getComponent(state.components.userInput),
         click: true,
-        clickCoord: message.data,
+        cx: message.data.cx,
+        cy: message.data.cy,
       };
-      state.components.userInput = newUserInput;
+      updateComponent(state.components.userInput, newUserInput);
+      // state.components.userInput = newUserInput;
     },
   };
 }

@@ -23,20 +23,37 @@ function addEntity(entities, options = {}) {
 }
 
 function addComponent(comp, compTable, entityId) {
-  const newCompIndex = compTable.data.length;
-  comp.entityId = entityId;
-  compTable.data.push(comp);
-  compTable.index[entityId] = newCompIndex;
+  if (compTable.isSingleton && compTable.data.length === 0) {
+    compTable.data.push(comp);
+  } else {
+    const newCompIndex = compTable.data.length;
+    comp.entityId = entityId;
+    compTable.data.push(comp);
+    compTable.index[entityId] = newCompIndex;
+  }
 }
 
-function updateComponent(compTable, entityId, data) {
-  const compIndex = compTable.index[entityId];
-  compTable.data[compIndex] = data;
+function updateComponent(compTable, data, entityId) {
+  if (compTable.isSingleton && compTable.data.length === 1) {
+    compTable.data[0] = data;
+  } else {
+    const compIndex = compTable.index[entityId];
+    compTable.data[compIndex] = data;
+  }
 }
 
-// function addComponent(component, componentTable, entityId) {
-//   componentTable[entityId] = component;
-// }
+function getComponent(compTable, entityId) {
+  if (compTable.isSingleton) {
+    if (compTable.data.length === 1) {
+      return compTable.data[0];
+    } else {
+      return null;
+    }
+  } else {
+    const compIndex = compTable.index[entityId];
+    return compTable.data[compIndex];
+  }
+}
 
 function join(primaryCompName, siblingCompNames, compTables) {
   let rows = [];
@@ -59,39 +76,6 @@ function join(primaryCompName, siblingCompNames, compTables) {
   return rows;
 }
 
-// function join(componentTableNames, entities, componentTables) {
-//   let rows = [];
-
-//   for (let i = 0; i < entities.length; i++) {
-//     const entityId = i;
-//     let row = createRow(entityId, componentTableNames, componentTables);
-//     row ? rows.push(row) : null;
-//   }
-
-//   return rows;
-// }
-
-function createRow(entityId, componentTableNames, componentTables) {
-  let row = { entityId };
-
-  for (const componentTableName of componentTableNames) {
-    const componentTable = componentTables[componentTableName];
-    if (isSingleton(componentTable)) {
-      const component = componentTable;
-      row = addCols(row, component);
-    } else {
-      const component = componentTable[entityId];
-      if (component === null) {
-        return null;
-      } else {
-        row = addCols(row, component);
-      }
-    }
-  }
-
-  return row;
-}
-
 function addCols(row, newRow) {
   for (const key in newRow) {
     row[key] = newRow[key];
@@ -99,8 +83,4 @@ function addCols(row, newRow) {
   return row;
 }
 
-function isSingleton(componentTable) {
-  return !Array.isArray(componentTable);
-}
-
-export { createComponentTable, addEntity, addComponent, updateComponent, join };
+export { createComponentTable, addEntity, addComponent, updateComponent, getComponent, join };

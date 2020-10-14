@@ -1,4 +1,5 @@
 import { Client } from 'node-osc';
+import { log } from "./util";
 import { createBallEntity, createUpdateBallPositionMessage } from "./ball";
 import {
   createUserInput,
@@ -11,7 +12,7 @@ import { getRootMessageTable } from "./message-handlers/rootMessageTable";
 import { getGrid } from './grid';
 import { createRectEntity, createUpdateRectMessage } from "./rect";
 import { getTimeDivisions } from './time';
-import { createComponentTable, join } from "./entityComponent";
+import { createComponentTable, addComponent, join } from "./entityComponent";
 import { createUserInputMessageTable } from './message-handlers/userInputMessageTable';
 
 function getGame(options = {}) {
@@ -35,11 +36,19 @@ function getGame(options = {}) {
     drawable: createComponentTable(),
     controllable: createComponentTable(),
     clickable: createComponentTable(),
-    userInput: createUserInput(),
+    userInput: createComponentTable({ isSingleton: true }),
   };
 
+  addComponent(createUserInput(), game.state.components.userInput);
+  
   createBallEntity(game.state);
   createRectEntity(game.state, { x: 50, y: 50, w: 50, h: 50, color: "#000000" });
+
+  // console.log(game.state)
+
+  // game.state.components.userInput.data[0] = {blah: "aaaa"};
+
+  // console.log(game.state)
 
   game.inputQueue = new MessageQueue();
   game.queue = new MessageQueue();
@@ -152,22 +161,19 @@ function controlSystem(state) {
     state.components,
   );
 
-  // let controllableBalls = join(
-  //   ["position", "ball", "controllable"], 
-  //   state.entities, 
-  //   state.components
-  // );
-
   for (const ball of controllableBalls) {
     const msg = createUpdateBallPositionMessage(ball, state.components.userInput);
     msg ? out.push(msg) : null;
   }
 
   let clickableRects = join(
-    ["position", "rect", "clickable"], 
-    state.entities, 
-    state.components
+    "rect",
+    ["position", "clickable"],
+    state.components,
   );
+
+  // log('clickable rects')
+  // log(clickableRects)
 
   for (const rect of clickableRects) {
     const msg = createUpdateRectMessage(rect, state.components.userInput);
@@ -178,8 +184,8 @@ function controlSystem(state) {
   out.push({
     type: "update component",
     component: "userInput",
-    entityId: -1,
-    data: { ...state.components.userInput, click: false },
+    // entityId: -1,
+    data: { ...state.components.userInput.data[0], click: false },
   })
 
   return out;

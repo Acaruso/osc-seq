@@ -6,7 +6,8 @@ function createUserInput() {
     down: false,
     enter: false,
     click: false,
-    clickCoord: { x: 0, y: 0 },
+    cx: 0,
+    cy: 0,
   };
 }
 
@@ -32,8 +33,8 @@ function addMouseHandler(state, queue) {
 
 function getMouseCoord(event, canvas) {
   return {
-    x: event.x - canvas.offsetLeft,
-    y: event.y - canvas.offsetTop,
+    cx: event.x - canvas.offsetLeft,
+    cy: event.y - canvas.offsetTop,
   };
 }
 

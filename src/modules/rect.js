@@ -31,7 +31,8 @@ function createRectEntity(state, options = {}) {
 }
 
 function createUpdateRectMessage(rect, userInput) {
-  if (userInput.click && isCoordInsideRect(userInput.clickCoord, rect)) {
+  const coord = { x: userInput.cx, y: userInput.cy };
+  if (userInput.click && isCoordInsideRect(coord, rect)) {
     let newRect = { ...rect };
 
     if (rect.color === "#FF5733") {
@@ -40,12 +41,14 @@ function createUpdateRectMessage(rect, userInput) {
       newRect.color = "#FF5733";
     }
 
-    return { 
+    let res = { 
       type: "update component", 
       component: "rect", 
       entityId: newRect.entityId,
       data: { w: newRect.w, h: newRect.h, color: newRect.color },
     };
+
+    return res;
   }
 }
 

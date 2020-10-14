@@ -8,11 +8,13 @@ function getUpdateMessageTable(state) {
 
       const compTable = state.components[compName];
 
-      if (compTable.isSingleton) {
-        compTable.data = message.data;
-      } else {
-        updateComponent(compTable, entityId, message.data);
-      }
+      updateComponent(compTable, message.data, entityId);
+
+      // if (compTable.isSingleton) {
+      //   compTable.data = message.data;
+      // } else {
+      //   updateComponent(compTable, message.data, entityId);
+      // }
 
       // entityId === -1 is singleton component
       // is there some better way to represent this?
