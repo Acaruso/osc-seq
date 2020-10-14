@@ -1,5 +1,32 @@
 import { addEntity, addComponent } from "./entityComponent";
 
+function createBallEntity(state) {
+  const newEntityId = addEntity(state.entities, { name: "ball" });
+
+  addComponent(
+    { x: 0, y: 0 }, 
+    state.components.position,
+    newEntityId,
+  );
+  addComponent(
+    { radius: 10 }, 
+    state.components.ball,
+    newEntityId,
+  );
+  addComponent(
+    { }, 
+    state.components.drawable,
+    newEntityId,
+  );
+  addComponent(
+    { }, 
+    state.components.controllable,
+    newEntityId,
+  );
+
+  return newEntityId;
+}
+
 function drawBall(ball, canvas) {
   let ctx = canvas.getContext("2d");
   ctx.beginPath();
@@ -36,33 +63,6 @@ function createUpdateBallPositionMessage(row, userInput) {
     entityId: row.entityId,
     data: newPosition
   };
-}
-
-function createBallEntity(state) {
-  const newEntityId = addEntity(state.entities, { name: "ball" });
-
-  addComponent(
-    { x: 0, y: 0 }, 
-    state.components.position,
-    newEntityId,
-  );
-  addComponent(
-    { radius: 10 }, 
-    state.components.ball,
-    newEntityId,
-  );
-  addComponent(
-    { }, 
-    state.components.drawable,
-    newEntityId,
-  );
-  addComponent(
-    { }, 
-    state.components.controllable,
-    newEntityId,
-  );
-
-  return newEntityId;
 }
 
 export { drawBall, createBallEntity, createUpdateBallPositionMessage };

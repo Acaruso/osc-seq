@@ -1,4 +1,6 @@
-function createComponentCollection(options = {}) {
+import { log } from "./util";
+
+function createComponentTable(options = {}) {
   const isSingleton = options.isSingleton ? options.isSingleton : false;
   let components = {
     index: {},
@@ -20,21 +22,49 @@ function addEntity(entities, options = {}) {
   return entityId;
 }
 
-function addComponent(component, componentTable, entityId) {
-  componentTable[entityId] = component;
+function addComponent(comp, compTable, entityId) {
+  const newCompIndex = compTable.data.length;
+  comp.entityId = entityId;
+  compTable.data.push(comp);
+  compTable.index[entityId] = newCompIndex;
 }
 
-function join(componentTableNames, entities, componentTables) {
+// function addComponent(component, componentTable, entityId) {
+//   componentTable[entityId] = component;
+// }
+
+function join(primaryCompName, siblingCompNames, compTables) {
   let rows = [];
 
-  for (let i = 0; i < entities.length; i++) {
-    const entityId = i;
-    let row = createRow(entityId, componentTableNames, componentTables);
-    row ? rows.push(row) : null;
+  const primaryCompTable = compTables[primaryCompName];
+  for (const row of primaryCompTable.data) {
+    let newRow = { ...row };
+    const entityId = row.entityId;
+    for (const siblingCompName of siblingCompNames) {
+      const siblingCompTable = compTables[siblingCompName];
+      if (siblingCompTable.index.hasOwnProperty(entityId)) {
+        const siblingRowIndex = siblingCompTable.index[entityId];
+        const siblingRow = siblingCompTable.data[siblingRowIndex];
+        newRow = addCols(newRow, siblingRow);
+      }
+    }
+    rows.push(newRow);
   }
 
   return rows;
 }
+
+// function join(componentTableNames, entities, componentTables) {
+//   let rows = [];
+
+//   for (let i = 0; i < entities.length; i++) {
+//     const entityId = i;
+//     let row = createRow(entityId, componentTableNames, componentTables);
+//     row ? rows.push(row) : null;
+//   }
+
+//   return rows;
+// }
 
 function createRow(entityId, componentTableNames, componentTables) {
   let row = { entityId };
@@ -68,4 +98,4 @@ function isSingleton(componentTable) {
   return !Array.isArray(componentTable);
 }
 
-export { addEntity, addComponent, join };
+export { createComponentTable, addEntity, addComponent, join };

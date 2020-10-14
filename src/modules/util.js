@@ -54,10 +54,15 @@ function isCoordInsideRect(coord, rect) {
   return res;
 }
 
+function log(s) {
+  console.log(s);
+}
+
 export { 
   drawRect,
   strokeRect,
   detectRectCollision,
   getSquareFromCircle,
   isCoordInsideRect,
+  log,
 };

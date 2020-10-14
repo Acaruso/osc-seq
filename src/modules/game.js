@@ -11,7 +11,7 @@ import { getRootMessageTable } from "./message-handlers/rootMessageTable";
 import { getGrid } from './grid';
 import { createRectEntity, createUpdateRectMessage } from "./rect";
 import { getTimeDivisions } from './time';
-import { join } from "./entityComponent";
+import { createComponentTable, join } from "./entityComponent";
 import { createUserInputMessageTable } from './message-handlers/userInputMessageTable';
 
 function getGame(options = {}) {
@@ -26,24 +26,38 @@ function getGame(options = {}) {
   game.state.canvas = document.getElementById("myCanvas");
   game.state.clock = 0;
 
-  game.maxEntities = 1024;
-
   game.state.entities = [];
+
   game.state.components = {
-    position: new Array(game.maxEntities).fill(null),
-    ball: new Array(game.maxEntities).fill(null),
-    rect: new Array(game.maxEntities).fill(null),
-    drawable: new Array(game.maxEntities).fill(null),
-    controllable: new Array(game.maxEntities).fill(null),
-    clickable: new Array(game.maxEntities).fill(null),
+    position: createComponentTable(),
+    ball: createComponentTable(),
+    rect: createComponentTable(),
+    drawable: createComponentTable(),
+    controllable: createComponentTable(),
+    clickable: createComponentTable(),
     userInput: createUserInput(),
   };
 
   createBallEntity(game.state);
-  createRectEntity(
-    game.state,
-    { x: 50, y: 50, w: 50, h: 50, color: "#000000" },
-  );
+  createRectEntity(game.state, { x: 50, y: 50, w: 50, h: 50, color: "#000000" });
+
+  // console.log(game.state)
+
+  // let drawableBalls = join(
+  //   "ball",
+  //   ["position", "drawable"],
+  //   game.state.components,
+  // );
+
+  // console.log(drawableBalls)
+
+  // let drawableRects = join(
+  //   "rect",
+  //   ["position", "drawable"],
+  //   game.state.components,
+  // );
+
+  // console.log(drawableRects)
 
   game.inputQueue = new MessageQueue();
   game.queue = new MessageQueue();
@@ -77,7 +91,7 @@ function gameLoop(game) {
     { type: "clear screen" },
     { type: "osc trigger 1" },
     { type: "osc trigger 2" },
-    controlSystem(game.state),
+    // controlSystem(game.state),
     drawSystem(game.state),
     { type: "update clock" },
     { type: "end of draw loop" },
@@ -118,11 +132,21 @@ function drawSystem(state) {
 function drawBallsSystem(state) {
   let out = [];
   
+  // join(primaryCompName, siblingCompNames, compTables)
+  
   let drawableBalls = join(
-    ["position", "ball", "drawable"],
-    state.entities,
-    state.components
+    "ball",
+    ["position", "drawable"],
+    state.components,
   );
+  
+  // console.log(drawableBalls)
+
+  // let drawableBalls = join(
+  //   ["position", "ball", "drawable"],
+  //   state.entities,
+  //   state.components
+  // );
 
   for (const ball of drawableBalls) {
     out.push({ type: "draw ball", data: ball });
@@ -135,10 +159,16 @@ function drawRectsSystem(state) {
   let out = [];
   
   let drawableRects = join(
-    ["position", "rect", "drawable"], 
-    state.entities, 
-    state.components
+    "rect",
+    ["position", "drawable"],
+    state.components,
   );
+
+  // let drawableRects = join(
+  //   ["position", "rect", "drawable"], 
+  //   state.entities, 
+  //   state.components
+  // );
 
   for (const rect of drawableRects) {
     out.push({ type: "draw rect", data: rect });
