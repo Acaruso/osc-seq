@@ -1,5 +1,5 @@
 import { Client } from 'node-osc';
-import { getBall, createBallEntity, createUpdateBallPositionMessage } from "./ball";
+import { createBallEntity, createUpdateBallPositionMessage } from "./ball";
 import {
   getKeyboard,
   addKeyboardHandlers,
@@ -9,10 +9,9 @@ import { MessageQueue } from "./messageQueue";
 import { Logger } from "./logger";
 import { getRootMessageTable } from "./message-handlers/rootMessageTable";
 import { getGrid } from './grid';
-import { getRect, createRectEntity, createUpdateRectMessage } from "./rect";
+import { createRectEntity, createUpdateRectMessage } from "./rect";
 import { getTimeDivisions } from './time';
-import { addEntity } from "./entity";
-import { addComponent, join } from "./component";
+import { join } from "./component";
 import { createInputMessageTable } from './message-handlers/inputMessageTable';
 
 function getGame(options = {}) {
@@ -48,30 +47,9 @@ function getGame(options = {}) {
   );
 
   game.inputQueue = new MessageQueue();
-
-  // game.state.objects = [
-  //   getBall(game.state.canvas),
-  //   getGrid({ numRows: 2, numCols: 4, x: 5, y: 5 }),
-  //   getRect({
-  //     x: 110,
-  //     y: 110,
-  //     width: 30,
-  //     height: 30,
-  //     color: "#FF5733",
-  //   }),
-  //   getGrid({
-  //     numRows: 2,
-  //     numCols: 4,
-  //     cellWidth: 30,
-  //     cellHeight: 20,
-  //     x: 200,
-  //     y: 200,
-  //   }),
-  // ];
+  game.queue = new MessageQueue();
 
   game.state.time = getTimeDivisions(120);
-
-  game.queue = new MessageQueue();
 
   addKeyboardHandlers(game.inputQueue);
   addMouseHandler(game.state, game.inputQueue);
@@ -97,6 +75,9 @@ function gameLoop(game) {
   // probably yeah, probably want to rewrite input stuff to just update
   // userInput component directly
   // but what about mouse events?
+  // seems useful to keep userInput as a component that can be updated via message
+  // but for user input stage of processing, just write directly to it
+  // --> no messages / queues 
 
   let resultsOfInputMessages = handleInputMessages(
     game.inputQueue,
