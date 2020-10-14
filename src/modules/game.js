@@ -12,7 +12,7 @@ import { getGrid } from './grid';
 import { createRectEntity, createUpdateRectMessage } from "./rect";
 import { getTimeDivisions } from './time';
 import { join } from "./component";
-import { createInputMessageTable } from './message-handlers/inputMessageTable';
+import { createUserInputMessageTable } from './message-handlers/userInputMessageTable';
 
 function getGame(options = {}) {
   let game = {};
@@ -55,7 +55,7 @@ function getGame(options = {}) {
 
   game.messageTable = getRootMessageTable(game.state);
 
-  game.inputMessageTable = createInputMessageTable(game.state);
+  game.userInputMessageTable = createUserInputMessageTable(game.state);
 
   return game;
 }
@@ -78,15 +78,13 @@ function gameLoop(game) {
   // but for user input stage of processing, just write directly to it
   // --> no messages / queues 
   // actually maybe keep queue but in handler fn, just update userInput directly
-
-  let resultsOfInputMessages = handleInputMessages(
+  
+  handleMessages(
     game.inputQueue,
-    game.inputMessageTable,
+    game.userInputMessageTable,
     game.logger,
     game.logging
   );
-
-  game.queue.push(resultsOfInputMessages);
 
   handleMessages(
     game.queue, 
@@ -123,21 +121,6 @@ function handleMessages(queue, messageTable, logger, logging) {
       }
     }
   }
-}
-
-function handleInputMessages(queue, messageTable, logger, logging) {
-  let out = [];
-  let message = null;
-  while (message = queue.messages.shift()) {
-    if (messageTable[message.type]) {
-      let res = messageTable[message.type](message);
-      out.push(res);
-      if (logging) {
-        logger.log(JSON.stringify(message));
-      }
-    }
-  }
-  return out;
 }
 
 function drawSystem(state) {

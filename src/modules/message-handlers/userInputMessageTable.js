@@ -1,74 +1,74 @@
-function createInputMessageTable(state) {
+function createUserInputMessageTable(state) {
   return {
     "ArrowRight:keydown": (message) => {
       let newUserInput = { 
         ...state.components.userInput,
         right: true
       };
-      return createUpdateInputMessage(newUserInput);
+      state.components.userInput = newUserInput;
     },
     "ArrowRight:keyup": (message) => {
       let newUserInput = { 
         ...state.components.userInput,
         right: false
       };
-      return createUpdateInputMessage(newUserInput);
+      state.components.userInput = newUserInput;
     },
     "ArrowLeft:keydown": (message) => {
       let newUserInput = { 
         ...state.components.userInput,
         left: true
       };
-      return createUpdateInputMessage(newUserInput);
+      state.components.userInput = newUserInput;
     },
     "ArrowLeft:keyup": (message) => {
       let newUserInput = { 
         ...state.components.userInput,
         left: false
       };
-      return createUpdateInputMessage(newUserInput);
+      state.components.userInput = newUserInput;
     },
     "ArrowUp:keydown": (message) => {
       let newUserInput = { 
         ...state.components.userInput,
         up: true
       };
-      return createUpdateInputMessage(newUserInput);
+      state.components.userInput = newUserInput;
     },
     "ArrowUp:keyup": (message) => {
       let newUserInput = { 
         ...state.components.userInput,
         up: false
       };
-      return createUpdateInputMessage(newUserInput);
+      state.components.userInput = newUserInput;
     },
     "ArrowDown:keydown": (message) => {
       let newUserInput = { 
         ...state.components.userInput,
         down: true
       };
-      return createUpdateInputMessage(newUserInput);
+      state.components.userInput = newUserInput;
     },
     "ArrowDown:keyup": (message) => {
       let newUserInput = { 
         ...state.components.userInput,
         down: false
       };
-      return createUpdateInputMessage(newUserInput);
+      state.components.userInput = newUserInput;
     },
     "Enter:keydown": (message) => {
       let newUserInput = { 
         ...state.components.userInput,
         enter: true
       };
-      return createUpdateInputMessage(newUserInput);
+      state.components.userInput = newUserInput;
     },
     "Enter:keyup": (message) => {
       let newUserInput = { 
         ...state.components.userInput,
         enter: false
       };
-      return createUpdateInputMessage(newUserInput);
+      state.components.userInput = newUserInput;
     },
     "mouse click": (message) => {
       let newUserInput = { 
@@ -76,18 +76,9 @@ function createInputMessageTable(state) {
         click: true,
         clickCoord: message.data,
       };
-      return createUpdateInputMessage(newUserInput);
+      state.components.userInput = newUserInput;
     },
   };
 }
 
-function createUpdateInputMessage(input) {
-  return {
-    type: "update component",
-    component: "userInput",
-    entityId: -1,
-    data: input,
-  };
-}
-
-export { createInputMessageTable };
+export { createUserInputMessageTable };
