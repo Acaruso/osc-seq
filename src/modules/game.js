@@ -11,7 +11,7 @@ import { getRootMessageTable } from "./message-handlers/rootMessageTable";
 import { getGrid } from './grid';
 import { createRectEntity, createUpdateRectMessage } from "./rect";
 import { getTimeDivisions } from './time';
-import { join } from "./component";
+import { join } from "./entityComponent";
 import { createUserInputMessageTable } from './message-handlers/userInputMessageTable';
 
 function getGame(options = {}) {
@@ -31,10 +31,10 @@ function getGame(options = {}) {
   game.state.entities = [];
   game.state.components = {
     position: new Array(game.maxEntities).fill(null),
-    controllable: new Array(game.maxEntities).fill(null),
     ball: new Array(game.maxEntities).fill(null),
     rect: new Array(game.maxEntities).fill(null),
     drawable: new Array(game.maxEntities).fill(null),
+    controllable: new Array(game.maxEntities).fill(null),
     clickable: new Array(game.maxEntities).fill(null),
     userInput: createUserInput(),
   };
@@ -65,34 +65,14 @@ function startGameLoop(game) {
 }
 
 function gameLoop(game) {
-  // DOM event handlers (on click, on keydown/up) push events to input message queue
-  // at beginning of every game loop, convert these into state update messages to update userInput component
-  // then handle those messages to update userInput component
-  // then use "systems" to get other state update messages, draw messages, etc
-  // then handle those messages to do that stuff
-  // is this over complicated?
-  // probably yeah, probably want to rewrite input stuff to just update
-  // userInput component directly
-  // but what about mouse events?
-  // seems useful to keep userInput as a component that can be updated via message
-  // but for user input stage of processing, just write directly to it
-  // --> no messages / queues 
-  // actually maybe keep queue but in handler fn, just update userInput directly
-  
+  // handle input messages  
   handleMessages(
     game.inputQueue,
     game.userInputMessageTable,
     game.logger,
     game.logging
   );
-
-  handleMessages(
-    game.queue, 
-    game.messageTable, 
-    game.logger, 
-    game.logging
-  );
-
+  
   game.queue.push([
     { type: "clear screen" },
     { type: "osc trigger 1" },
@@ -125,6 +105,7 @@ function handleMessages(queue, messageTable, logger, logging) {
 
 function drawSystem(state) {
   let out = [];
+
   let drawBallsMsgs = drawBallsSystem(state);
   out = out.concat(drawBallsMsgs);
 
@@ -138,8 +119,8 @@ function drawBallsSystem(state) {
   let out = [];
   
   let drawableBalls = join(
-    ["position", "ball", "drawable", "controllable", "userInput"], 
-    state.entities, 
+    ["position", "ball", "drawable"],
+    state.entities,
     state.components
   );
 
@@ -170,13 +151,13 @@ function controlSystem(state) {
   let out = [];
 
   let controllableBalls = join(
-    ["position", "ball", "controllable", "userInput"], 
+    ["position", "ball", "controllable"], 
     state.entities, 
     state.components
   );
 
   for (const ball of controllableBalls) {
-    const msg = createUpdateBallPositionMessage(ball);
+    const msg = createUpdateBallPositionMessage(ball, state.components.userInput);
     msg ? out.push(msg) : null;
   }
 

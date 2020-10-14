@@ -1,3 +1,25 @@
+function createComponentCollection(options = {}) {
+  const isSingleton = options.isSingleton ? options.isSingleton : false;
+  let components = {
+    index: {},
+    data: [],
+    isSingleton,
+  };
+  return components;
+}
+
+function addEntity(entities, options = {}) {
+  const entityId = entities.length;
+  const name = options.name ? options.name : "";
+  const parentId = options.parentId ? options.parentId : -1;
+  entities.push({
+    name,
+    entityId,
+    parentId,
+  });
+  return entityId;
+}
+
 function addComponent(component, componentTable, entityId) {
   componentTable[entityId] = component;
 }
@@ -46,4 +68,4 @@ function isSingleton(componentTable) {
   return !Array.isArray(componentTable);
 }
 
-export { addComponent, join };
+export { addEntity, addComponent, join };

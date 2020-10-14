@@ -1,6 +1,5 @@
 import { isCoordInsideRect } from "./util";
-import { addEntity } from "./entity";
-import { addComponent } from "./component";
+import { addEntity, addComponent } from "./entityComponent";
 
 function createRectEntity(state, options = {}) {
   const { x, y, w, h, color } = options;

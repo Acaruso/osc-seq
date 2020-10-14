@@ -1,5 +1,4 @@
-import { addEntity } from "./entity";
-import { addComponent } from "./component";
+import { addEntity, addComponent } from "./entityComponent";
 
 function drawBall(ball, canvas) {
   let ctx = canvas.getContext("2d");
@@ -10,22 +9,22 @@ function drawBall(ball, canvas) {
   ctx.closePath();
 }
 
-function createUpdateBallPositionMessage(row) {
+function createUpdateBallPositionMessage(row, userInput) {
   let newPosition = {
     x: row.x,
     y: row.y,
   };
 
-  if (row.right) {
+  if (userInput.right) {
     newPosition.x += 2;
   }
-  else if (row.left) {
+  else if (userInput.left) {
     newPosition.x -= 2;
   }
-  else if (row.up) {
+  else if (userInput.up) {
     newPosition.y -= 2;
   }
-  else if (row.down) {
+  else if (userInput.down) {
     newPosition.y += 2;
   } else {
     return [];
