@@ -11,11 +11,11 @@ function getDrawMessageTable(state) {
     "draw ball": (message) => {
       drawBall(message.data, state.canvas);
     },
-    "draw grid": (message) => {
-      drawGrid(message.data, state.canvas);
-    },
     "draw rect": (message) => {
       drawRect(message.data, state.canvas);
+    },
+    "draw grid": (message) => {
+      drawGrid(message.data, state.canvas);
     },
   };
 }

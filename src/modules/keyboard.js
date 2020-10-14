@@ -5,6 +5,8 @@ function getKeyboard() {
     up: false,
     down: false,
     enter: false,
+    click: false,
+    clickCoord: { x: 0, y: 0 },
   };
 }
 
@@ -21,8 +23,10 @@ function addMouseHandler(state, queue) {
   document.addEventListener(
     "mousedown", 
     (event) => {
-      const messages = handleMouseClick(event, state);
-      queue.push(messages);
+      const coord = getMouseCoord(event, state.canvas);
+      queue.push({ type: "mouse click", data: coord })
+      // const messages = handleMouseClick(event, state);
+      // queue.push(messages);
     },
     false
   );

@@ -9,7 +9,7 @@ import { MessageQueue } from "./messageQueue";
 import { Logger } from "./logger";
 import { getRootMessageTable } from "./message-handlers/rootMessageTable";
 import { getGrid } from './grid';
-import { getRect } from "./rect";
+import { getRect, createRectEntity, createUpdateRectMessage } from "./rect";
 import { getTimeDivisions } from './time';
 import { addEntity } from "./entity";
 import { addComponent, join } from "./component";
@@ -35,73 +35,50 @@ function getGame(options = {}) {
     position: new Array(game.maxEntities).fill(null),
     controllable: new Array(game.maxEntities).fill(null),
     ball: new Array(game.maxEntities).fill(null),
+    rect: new Array(game.maxEntities).fill(null),
     drawable: new Array(game.maxEntities).fill(null),
+    clickable: new Array(game.maxEntities).fill(null),
     userInput: getKeyboard(),
   };
 
   createBallEntity(game.state);
+  createRectEntity(
+    game.state,
+    { x: 50, y: 50, w: 50, h: 50, color: "#000000" },
+  );
 
   game.inputQueue = new MessageQueue();
 
-  // addEntity({ name: "ball" }, game.state.entities);
-  // addComponent(
-  //   { x: 0, y: 0 }, 
-  //   game.state.components.position,
-  //   "ball",
-  //   game.state.entities, 
-  // );
-  // addComponent(
-  //   { radius: 10 }, 
-  //   game.state.components.ball,
-  //   "ball",
-  //   game.state.entities, 
-  // );
-  // addComponent(
-  //   { }, 
-  //   game.state.components.controllable,
-  //   "ball",
-  //   game.state.entities, 
-  // );
-  // addComponent(
-  //   { }, 
-  //   game.state.components.drawable,
-  //   "ball",
-  //   game.state.entities, 
-  // );
-
-  game.state.objects = [
-    getBall(game.state.canvas),
-    getGrid({ numRows: 2, numCols: 4, x: 5, y: 5 }),
-    getRect({
-      x: 110,
-      y: 110,
-      width: 30,
-      height: 30,
-      color: "#FF5733",
-    }),
-    getGrid({
-      numRows: 2,
-      numCols: 4,
-      cellWidth: 30,
-      cellHeight: 20,
-      x: 200,
-      y: 200,
-    }),
-  ];
+  // game.state.objects = [
+  //   getBall(game.state.canvas),
+  //   getGrid({ numRows: 2, numCols: 4, x: 5, y: 5 }),
+  //   getRect({
+  //     x: 110,
+  //     y: 110,
+  //     width: 30,
+  //     height: 30,
+  //     color: "#FF5733",
+  //   }),
+  //   getGrid({
+  //     numRows: 2,
+  //     numCols: 4,
+  //     cellWidth: 30,
+  //     cellHeight: 20,
+  //     x: 200,
+  //     y: 200,
+  //   }),
+  // ];
 
   game.state.time = getTimeDivisions(120);
 
   game.queue = new MessageQueue();
 
   addKeyboardHandlers(game.inputQueue);
-  addMouseHandler(game.state, game.queue);
+  addMouseHandler(game.state, game.inputQueue);
 
   game.messageTable = getRootMessageTable(game.state);
 
   game.inputMessageTable = createInputMessageTable(game.state);
-
-  // game.inputQueue.push({test: "test"});
-  // console.log(game.inputQueue);
 
   return game;
 }
@@ -111,22 +88,24 @@ function startGameLoop(game) {
 }
 
 function gameLoop(game) {
-  let messages = [];
+  // DOM event handlers (on click, on keydown/up) push events to input message queue
+  // at beginning of every game loop, convert these into state update messages to update userInput component
+  // then handle those messages to update userInput component
+  // then use "systems" to get other state update messages, draw messages, etc
+  // then handle those messages to do that stuff
+  // is this over complicated?
+  // probably yeah, probably want to rewrite input stuff to just update
+  // userInput component directly
+  // but what about mouse events?
 
-  // if (game.inputQueue.messages.length !== 0) {
-  //   console.log('!!!!!!!!!!!')
-  //   console.log(game.inputQueue.messages.length)
-  //   console.log(game.inputQueue.messages)
-  // }
-
-  let m = handleInputMessages(
+  let resultsOfInputMessages = handleInputMessages(
     game.inputQueue,
     game.inputMessageTable,
     game.logger,
     game.logging
   );
 
-  game.queue.push(m);
+  game.queue.push(resultsOfInputMessages);
 
   handleMessages(
     game.queue, 
@@ -135,23 +114,15 @@ function gameLoop(game) {
     game.logging
   );
 
-  if (game.state.components.userInput.right) {
-    console.log('RIGHT')
-  }
-
-  messages.push(
+  game.queue.push([
     { type: "clear screen" },
     { type: "osc trigger 1" },
     { type: "osc trigger 2" },
     controlSystem(game.state),
     drawSystem(game.state),
-    // getDrawMessages(game.state),
-    // getUpdateMessages(game.state),
     { type: "update clock" },
     { type: "end of draw loop" },
-  );
-
-  game.queue.push(messages);
+  ]);
 
   handleMessages(
     game.queue, 
@@ -190,6 +161,17 @@ function handleInputMessages(queue, messageTable, logger, logging) {
 
 function drawSystem(state) {
   let out = [];
+  let drawBallsMsgs = drawBallsSystem(state);
+  out = out.concat(drawBallsMsgs);
+
+  let drawRectsMsgs = drawRectsSystem(state);
+  out = out.concat(drawRectsMsgs);
+
+  return out;
+}
+
+function drawBallsSystem(state) {
+  let out = [];
   
   let drawableBalls = join(
     ["position", "ball", "drawable", "controllable", "userInput"], 
@@ -199,6 +181,22 @@ function drawSystem(state) {
 
   for (const ball of drawableBalls) {
     out.push({ type: "draw ball", data: ball });
+  }
+
+  return out;
+}
+
+function drawRectsSystem(state) {
+  let out = [];
+  
+  let drawableRects = join(
+    ["position", "rect", "drawable"], 
+    state.entities, 
+    state.components
+  );
+
+  for (const rect of drawableRects) {
+    out.push({ type: "draw rect", data: rect });
   }
 
   return out;
@@ -215,34 +213,27 @@ function controlSystem(state) {
 
   for (const ball of controllableBalls) {
     const msg = createUpdateBallPositionMessage(ball);
-    out.push(msg);
+    msg ? out.push(msg) : null;
   }
 
-  return out;
-}
+  let clickableRects = join(
+    ["position", "rect", "clickable"], 
+    state.entities, 
+    state.components
+  );
 
-function getDrawMessages(state) {
-  let out = [];
-
-  for (let i = 0; i < state.objects.length; i++) {
-    const object = state.objects[i];
-    if (object.getDrawMessage) {
-      out.push(object.getDrawMessage(i, state));
-    }
+  for (const rect of clickableRects) {
+    const msg = createUpdateRectMessage(rect, state.components.userInput);
+    msg ? out.push(msg) : null;
   }
-
-  return out;
-}
-
-function getUpdateMessages(state) {
-  let out = [];
-
-  for (let i = 0; i < state.objects.length; i++) {
-    const object = state.objects[i];
-    if (object.getUpdateMessage) {
-      out.push(object.getUpdateMessage(i, state));
-    }
-  }
+  
+  // unset userInput.click
+  out.push({
+    type: "update component",
+    component: "userInput",
+    entityId: -1,
+    data: { ...state.components.userInput, click: false },
+  })
 
   return out;
 }

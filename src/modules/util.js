@@ -1,7 +1,7 @@
 function drawRect(rect, canvas) {
   let ctx = canvas.getContext("2d");
   ctx.beginPath();
-  ctx.rect(rect.x, rect.y, rect.width, rect.height);
+  ctx.rect(rect.x, rect.y, rect.w, rect.h);
   ctx.fillStyle = rect.color;
   ctx.fill();
   ctx.closePath();
@@ -45,12 +45,13 @@ function getSquareFromCircle(circle) {
 
 function isCoordInsideRect(coord, rect) {
   const { x, y } = coord;
-  return (
+  let res = (
     x >= rect.x && 
     y >= rect.y && 
-    x <= rect.x + rect.width &&
-    y <= rect.y + rect.height
+    x <= rect.x + rect.w &&
+    y <= rect.y + rect.h
   );
+  return res;
 }
 
 export { 

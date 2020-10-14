@@ -1,4 +1,4 @@
-function addEntity(options = {}, entities) {
+function addEntity(entities, options = {}) {
   const entityId = entities.length;
   const name = options.name ? options.name : "";
   const parentId = options.parentId ? parentId : -1;

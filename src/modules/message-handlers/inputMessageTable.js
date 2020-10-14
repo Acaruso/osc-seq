@@ -70,6 +70,14 @@ function createInputMessageTable(state) {
       };
       return createUpdateInputMessage(newUserInput);
     },
+    "mouse click": (message) => {
+      let newUserInput = { 
+        ...state.components.userInput,
+        click: true,
+        clickCoord: message.data,
+      };
+      return createUpdateInputMessage(newUserInput);
+    },
   };
 }
 

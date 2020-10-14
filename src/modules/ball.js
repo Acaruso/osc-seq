@@ -60,7 +60,6 @@ function createUpdateBallPositionMessage(row) {
   newPosition.y = row.y;
 
   if (row.right) {
-    console.log('right')
     newPosition.x += 2;
   }
   else if (row.left) {
@@ -84,7 +83,7 @@ function createUpdateBallPositionMessage(row) {
 }
 
 function createBallEntity(state) {
-  const newEntityId = addEntity({ name: "ball" }, state.entities);
+  const newEntityId = addEntity(state.entities, { name: "ball" });
 
   addComponent(
     { x: 0, y: 0 }, 

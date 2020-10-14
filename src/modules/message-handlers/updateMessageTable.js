@@ -8,8 +8,9 @@ function getUpdateMessageTable(state) {
       message.selector(state)(message.data);
     },
     "update component": (message) => {
-      console.log('update component')
-      console.log(message)
+      if (message.entityId === 1) {
+        console.log(message)
+      }
       const component = message.component;
       const entityId = message.entityId;
 
@@ -17,8 +18,6 @@ function getUpdateMessageTable(state) {
       // is there some better way to represent this?
       if (entityId === -1) {
         state.components[component] = message.data;
-        console.log(message)
-        console.log(state.components)
       } else {
         state.components[component][entityId] = message.data;
       }
