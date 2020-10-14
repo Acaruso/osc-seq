@@ -29,6 +29,11 @@ function addComponent(comp, compTable, entityId) {
   compTable.index[entityId] = newCompIndex;
 }
 
+function updateComponent(compTable, entityId, data) {
+  const compIndex = compTable.index[entityId];
+  compTable.data[compIndex] = data;
+}
+
 // function addComponent(component, componentTable, entityId) {
 //   componentTable[entityId] = component;
 // }
@@ -98,4 +103,4 @@ function isSingleton(componentTable) {
   return !Array.isArray(componentTable);
 }
 
-export { createComponentTable, addEntity, addComponent, join };
+export { createComponentTable, addEntity, addComponent, updateComponent, join };

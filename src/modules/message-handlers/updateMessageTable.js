@@ -1,16 +1,26 @@
+import { updateComponent } from "./../entityComponent";
+
 function getUpdateMessageTable(state) {
   return {
     "update component": (message) => {
-      const component = message.component;
+      const compName = message.component;
       const entityId = message.entityId;
+
+      const compTable = state.components[compName];
+
+      if (compTable.isSingleton) {
+        compTable.data = message.data;
+      } else {
+        updateComponent(compTable, entityId, message.data);
+      }
 
       // entityId === -1 is singleton component
       // is there some better way to represent this?
-      if (entityId === -1) {
-        state.components[component] = message.data;
-      } else {
-        state.components[component][entityId] = message.data;
-      }
+      // if (entityId === -1) {
+      //   state.components[component] = message.data;
+      // } else {
+      //   state.components[component][entityId] = message.data;
+      // }
     },
     "update clock": (message) => {
       state.clock = (state.clock + 1) % 4096;
