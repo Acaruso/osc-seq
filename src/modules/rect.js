@@ -31,8 +31,8 @@ function createRectEntity(state, options = {}) {
 }
 
 function createUpdateRectMessage(rect, userInput) {
-  const coord = { x: userInput.cx, y: userInput.cy };
-  if (userInput.click && isCoordInsideRect(coord, rect)) {
+  const coord = { x: userInput.data.cx, y: userInput.data.cy };
+  if (userInput.data.click && isCoordInsideRect(coord, rect)) {
     let newRect = { ...rect };
 
     if (rect.color === "#FF5733") {

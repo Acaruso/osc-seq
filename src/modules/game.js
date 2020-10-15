@@ -12,7 +12,7 @@ import { getRootMessageTable } from "./message-handlers/rootMessageTable";
 import { getGrid } from './grid';
 import { createRectEntity, createUpdateRectMessage } from "./rect";
 import { getTimeDivisions } from './time';
-import { createComponentTable, addComponent, join } from "./entityComponent";
+import { createComponentTable, addComponent, getComponent, join } from "./entityComponent";
 import { createUserInputMessageTable } from './message-handlers/userInputMessageTable';
 
 function getGame(options = {}) {
@@ -82,7 +82,7 @@ function gameLoop(game) {
     { type: "clear screen" },
     { type: "osc trigger 1" },
     { type: "osc trigger 2" },
-    // controlSystem(game.state),
+    controlSystem(game.state),
     drawSystem(game.state),
     { type: "update clock" },
     { type: "end of draw loop" },
@@ -181,11 +181,16 @@ function controlSystem(state) {
   }
   
   // unset userInput.click
+  const newUserInput = { 
+    ...getComponent(state.components.userInput),
+    click: false,
+  };
+
   out.push({
     type: "update component",
     component: "userInput",
     // entityId: -1,
-    data: { ...state.components.userInput.data[0], click: false },
+    data: newUserInput,
   })
 
   return out;

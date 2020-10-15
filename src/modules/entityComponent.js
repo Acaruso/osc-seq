@@ -23,8 +23,9 @@ function addEntity(entities, options = {}) {
 }
 
 function addComponent(comp, compTable, entityId) {
-  if (compTable.isSingleton && compTable.data.length === 0) {
-    compTable.data.push(comp);
+  if (compTable.isSingleton) {
+    // compTable.data.push(comp);
+    compTable.data = comp;
   } else {
     const newCompIndex = compTable.data.length;
     comp.entityId = entityId;
@@ -33,22 +34,24 @@ function addComponent(comp, compTable, entityId) {
   }
 }
 
-function updateComponent(compTable, data, entityId) {
-  if (compTable.isSingleton && compTable.data.length === 1) {
-    compTable.data[0] = data;
+function updateComponent(compTable, comp, entityId) {
+  if (compTable.isSingleton) {
+    // compTable.data[0] = comp;
+    compTable.data = comp;
   } else {
     const compIndex = compTable.index[entityId];
-    compTable.data[compIndex] = data;
+    compTable.data[compIndex] = comp;
   }
 }
 
 function getComponent(compTable, entityId) {
   if (compTable.isSingleton) {
-    if (compTable.data.length === 1) {
-      return compTable.data[0];
-    } else {
-      return null;
-    }
+    return compTable.data;
+    // if (compTable.data.length === 1) {
+    //   return compTable.data[0];
+    // } else {
+    //   return null;
+    // }
   } else {
     const compIndex = compTable.index[entityId];
     return compTable.data[compIndex];

@@ -1,27 +1,25 @@
 import { getComponent, updateComponent } from "./../entityComponent";
+import { log } from "./../util";
 
 function createUserInputMessageTable(state) {
   return {
     "ArrowRight:keydown": (message) => {
-      // let newUserInput = { 
-      //   ...getComponent(state.components.userInput),
-      //   right: true
-      // };
       let newUserInput = { 
-        ...state.components.userInput.data[0],
+        ...getComponent(state.components.userInput),
         right: true
       };
 
-      state.components.userInput.data[0] = newUserInput;
+      // let newUserInput = { 
+      //   ...state.components.userInput.data[0],
+      //   right: true
+      // };
+
+      // state.components.userInput.data[0] = newUserInput;
 
       // state.components.userInput.data[0] = {blah: "asdf"};
 
-      // updateComponent(state.components.userInput, newUserInput);
-      console.log('arrow right')
-      console.log(newUserInput)
-      console.log(state.components.userInput)
-      console.log(state.components.userInput.data)
-      console.log(state.components.userInput.data[0])
+      updateComponent(state.components.userInput, newUserInput);
+      
       // state.components.userInput = newUserInput;
     },
     "ArrowRight:keyup": (message) => {

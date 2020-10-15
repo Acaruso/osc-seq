@@ -42,16 +42,16 @@ function createUpdateBallPositionMessage(row, userInput) {
     y: row.y,
   };
 
-  if (userInput.right) {
+  if (userInput.data.right) {
     newPosition.x += 2;
   }
-  else if (userInput.left) {
+  else if (userInput.data.left) {
     newPosition.x -= 2;
   }
-  else if (userInput.up) {
+  else if (userInput.data.up) {
     newPosition.y -= 2;
   }
-  else if (userInput.down) {
+  else if (userInput.data.down) {
     newPosition.y += 2;
   } else {
     return [];
