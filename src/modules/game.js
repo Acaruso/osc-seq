@@ -118,8 +118,7 @@ function drawBallsSystem(state) {
   let out = [];
     
   let drawableBalls = join(
-    "ball",
-    ["position", "drawable"],
+    ["ball", "position", "drawable"],
     state.components,
   );
   
@@ -134,8 +133,7 @@ function drawRectsSystem(state) {
   let out = [];
   
   let drawableRects = join(
-    "rect",
-    ["position", "drawable"],
+    ["rect", "position", "drawable"],
     state.components,
   );
 
@@ -150,8 +148,7 @@ function controlSystem(state) {
   let out = [];
 
   let controllableBalls = join(
-    "ball",
-    ["position", "controllable"],
+    ["ball", "position", "controllable"],
     state.components,
   );
   
@@ -163,8 +160,7 @@ function controlSystem(state) {
   }
 
   let clickableRects = join(
-    "rect",
-    ["position", "clickable"],
+    ["rect", "position", "clickable"],
     state.components,
   );
 

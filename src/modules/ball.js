@@ -1,7 +1,7 @@
 import { addEntity, addComponent } from "./entityComponent";
 
 function createBallEntity(state) {
-  const newEntityId = addEntity(state.entities, { name: "ball" });
+  const newEntityId = addEntity(state.entities);
 
   addComponent(
     { x: 0, y: 0 }, 
