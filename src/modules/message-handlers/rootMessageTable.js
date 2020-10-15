@@ -1,4 +1,3 @@
-import { getKeyboardMessageTable } from "./keyboardMessageTable";
 import { getOscMessageTable } from "./oscMessageTable";
 import { getDrawMessageTable } from "./drawMessageTable";
 import { getUpdateMessageTable } from "./updateMessageTable";
@@ -10,7 +9,6 @@ function getRootMessageTable(state) {
 
   return {
     ...rootMessageTable,
-    ...getKeyboardMessageTable(state),
     ...getOscMessageTable(state),
     ...getDrawMessageTable(state),
     ...getUpdateMessageTable(state),

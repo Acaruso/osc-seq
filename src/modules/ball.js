@@ -1,16 +1,30 @@
-function getBall(canvas) {
-  return {
-    x: canvas.width / 2,
-    y: canvas.height - 30,
-    radius: 10,
-    getDrawMessage: (key, state) => {
-      const ball = state.objects[key];
-      return { type: "draw ball", data: ball };
-    },
-    getUpdateMessage: (key, state) => {
-      return getUpdateBallMessage(selector(key, state));
-    },
-  };
+import { addEntity, addComponent } from "./entityComponent";
+
+function createBallEntity(state) {
+  const newEntityId = addEntity(state.entities);
+
+  addComponent(
+    { x: 0, y: 0 }, 
+    state.components.position,
+    newEntityId,
+  );
+  addComponent(
+    { radius: 10 }, 
+    state.components.ball,
+    newEntityId,
+  );
+  addComponent(
+    { }, 
+    state.components.drawable,
+    newEntityId,
+  );
+  addComponent(
+    { }, 
+    state.components.controllable,
+    newEntityId,
+  );
+
+  return newEntityId;
 }
 
 function drawBall(ball, canvas) {
@@ -22,33 +36,33 @@ function drawBall(ball, canvas) {
   ctx.closePath();
 }
 
-function selector(key, state) {
-  return {
-    key: key,
-    ball: state.objects[key],
-    keyboard: state.keyboard,
+function createUpdateBallPositionMessage(row, userInput) {
+  let newPosition = {
+    x: row.x,
+    y: row.y,
   };
-}
 
-function getUpdateBallMessage({ key, ball, keyboard }) {
-  let newBall = { ...ball };
-
-  if (keyboard.right) {
-    newBall.x += 2;
+  if (userInput.right) {
+    newPosition.x += 2;
   }
-  else if (keyboard.left) {
-    newBall.x -= 2;
+  else if (userInput.left) {
+    newPosition.x -= 2;
   }
-  else if (keyboard.up) {
-    newBall.y -= 2;
+  else if (userInput.up) {
+    newPosition.y -= 2;
   }
-  else if (keyboard.down) {
-    newBall.y += 2;
+  else if (userInput.down) {
+    newPosition.y += 2;
   } else {
     return [];
   }
 
-  return { type: "update state", key, data: newBall };
+  return {
+    type: "update component",
+    component: "position",
+    entityId: row.entityId,
+    data: newPosition
+  };
 }
 
-export { getBall, drawBall };
+export { drawBall, createBallEntity, createUpdateBallPositionMessage };

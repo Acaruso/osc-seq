@@ -1,16 +1,19 @@
 import { Client } from 'node-osc';
-import { getBall } from "./ball";
+import { log } from "./util";
+import { createBallEntity, createUpdateBallPositionMessage } from "./ball";
 import {
-  getKeyboard,
+  createUserInput,
   addKeyboardHandlers,
   addMouseHandler,
-} from "./keyboard";
+} from "./userInput";
 import { MessageQueue } from "./messageQueue";
 import { Logger } from "./logger";
 import { getRootMessageTable } from "./message-handlers/rootMessageTable";
 import { getGrid } from './grid';
-import { getRect } from "./rect";
+import { createRectEntity, createUpdateRectMessage } from "./rect";
 import { getTimeDivisions } from './time';
+import { createComponentTable, addComponent, getComponent, join } from "./entityComponent";
+import { createUserInputMessageTable } from './message-handlers/userInputMessageTable';
 
 function getGame(options = {}) {
   let game = {};
@@ -22,37 +25,36 @@ function getGame(options = {}) {
 
   game.state.oscClient = new Client('127.0.0.1', 3333);
   game.state.canvas = document.getElementById("myCanvas");
-  game.state.keyboard = getKeyboard();
   game.state.clock = 0;
+
+  game.state.entities = [];
+
+  game.state.components = {
+    position: createComponentTable(),
+    ball: createComponentTable(),
+    rect: createComponentTable(),
+    drawable: createComponentTable(),
+    controllable: createComponentTable(),
+    clickable: createComponentTable(),
+    userInput: createComponentTable({ isSingleton: true }),
+  };
+
+  addComponent(createUserInput(), game.state.components.userInput);
   
-  game.state.objects = [
-    getBall(game.state.canvas),
-    getGrid({ numRows: 2, numCols: 4, x: 5, y: 5 }),
-    getRect({
-      x: 110,
-      y: 110,
-      width: 30,
-      height: 30,
-      color: "#FF5733",
-    }),
-    getGrid({
-      numRows: 2,
-      numCols: 4,
-      cellWidth: 30,
-      cellHeight: 20,
-      x: 200,
-      y: 200,
-    }),
-  ];
+  createBallEntity(game.state);
+  createRectEntity(game.state, { x: 50, y: 50, w: 50, h: 50, color: "#000000" });
+    
+  game.inputQueue = new MessageQueue();
+  game.queue = new MessageQueue();
 
   game.state.time = getTimeDivisions(120);
 
-  game.queue = new MessageQueue();
-
-  addKeyboardHandlers(game.queue);
-  addMouseHandler(game.state, game.queue);
+  addKeyboardHandlers(game.inputQueue);
+  addMouseHandler(game.state, game.inputQueue);
 
   game.messageTable = getRootMessageTable(game.state);
+
+  game.userInputMessageTable = createUserInputMessageTable(game.state);
 
   return game;
 }
@@ -62,17 +64,23 @@ function startGameLoop(game) {
 }
 
 function gameLoop(game) {
-  let messages = [
+  // handle input messages  
+  handleMessages(
+    game.inputQueue,
+    game.userInputMessageTable,
+    game.logger,
+    game.logging
+  );
+  
+  game.queue.push([
     { type: "clear screen" },
     { type: "osc trigger 1" },
     { type: "osc trigger 2" },
-    getDrawMessages(game.state),
-    getUpdateMessages(game.state),
+    controlSystem(game.state),
+    drawSystem(game.state),
     { type: "update clock" },
     { type: "end of draw loop" },
-  ];
-
-  game.queue.push(messages);
+  ]);
 
   handleMessages(
     game.queue, 
@@ -94,28 +102,84 @@ function handleMessages(queue, messageTable, logger, logging) {
   }
 }
 
-function getDrawMessages(state) {
+function drawSystem(state) {
   let out = [];
 
-  for (let i = 0; i < state.objects.length; i++) {
-    const object = state.objects[i];
-    if (object.getDrawMessage) {
-      out.push(object.getDrawMessage(i, state));
-    }
+  let drawBallsMsgs = drawBallsSystem(state);
+  out = out.concat(drawBallsMsgs);
+
+  let drawRectsMsgs = drawRectsSystem(state);
+  out = out.concat(drawRectsMsgs);
+
+  return out;
+}
+
+function drawBallsSystem(state) {
+  let out = [];
+    
+  let drawableBalls = join(
+    ["ball", "position", "drawable"],
+    state.components,
+  );
+  
+  for (const ball of drawableBalls) {
+    out.push({ type: "draw ball", data: ball });
   }
 
   return out;
 }
 
-function getUpdateMessages(state) {
+function drawRectsSystem(state) {
+  let out = [];
+  
+  let drawableRects = join(
+    ["rect", "position", "drawable"],
+    state.components,
+  );
+
+  for (const rect of drawableRects) {
+    out.push({ type: "draw rect", data: rect });
+  }
+
+  return out;
+}
+
+function controlSystem(state) {
   let out = [];
 
-  for (let i = 0; i < state.objects.length; i++) {
-    const object = state.objects[i];
-    if (object.getUpdateMessage) {
-      out.push(object.getUpdateMessage(i, state));
-    }
+  let controllableBalls = join(
+    ["ball", "position", "controllable"],
+    state.components,
+  );
+  
+  const userInput = getComponent(state.components.userInput);
+
+  for (const ball of controllableBalls) {
+    const msg = createUpdateBallPositionMessage(ball, userInput);
+    msg ? out.push(msg) : null;
   }
+
+  let clickableRects = join(
+    ["rect", "position", "clickable"],
+    state.components,
+  );
+
+  for (const rect of clickableRects) {
+    const msg = createUpdateRectMessage(rect, userInput);
+    msg ? out.push(msg) : null;
+  }
+  
+  // unset userInput.click
+  const newUserInput = { 
+    ...userInput,
+    click: false,
+  };
+
+  out.push({
+    type: "update component",
+    component: "userInput",
+    data: newUserInput,
+  })
 
   return out;
 }

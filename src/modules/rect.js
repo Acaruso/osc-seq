@@ -1,35 +1,55 @@
 import { isCoordInsideRect } from "./util";
+import { addEntity, addComponent } from "./entityComponent";
 
-function getRect(options = {}) {
-  const { x, y, width, height, color } = options;
-  
-  return {
-    x,
-    y,
-    width,
-    height,
-    color,
-    getDrawMessage: (key, state) => {
-      const rect = state.objects[key];
-      return { type: "draw rect", data: rect };
-    },
-    detectClick: (key, coord, state) => {
-      const rect = state.objects[key];
-      return isCoordInsideRect(coord, rect);
-    },
-    onClick: (key, coord, state) => {
-      const rect = state.objects[key];
-      let newRect = { ...rect };
+function createRectEntity(state, options = {}) {
+  const { x, y, w, h, color } = options;
 
-      if (rect.color === "#FF5733") {
-        newRect.color = "#000000";
-      } else {
-        newRect.color = "#FF5733";
-      }
+  const newEntityId = addEntity(state.entities);
 
-      return { type: "update state", key, data: newRect };
-    },
-  };
+  addComponent(
+    { x, y }, 
+    state.components.position,
+    newEntityId,
+  );
+  addComponent(
+    { w, h, color }, 
+    state.components.rect,
+    newEntityId,
+  );
+  addComponent(
+    { }, 
+    state.components.drawable,
+    newEntityId,
+  );
+  addComponent(
+    { }, 
+    state.components.clickable,
+    newEntityId,
+  );
+
+  return newEntityId;
 }
 
-export { getRect };
+function createUpdateRectMessage(rect, userInput) {
+  const coord = { x: userInput.cx, y: userInput.cy };
+  if (userInput.click && isCoordInsideRect(coord, rect)) {
+    let newRect = { ...rect };
+
+    if (rect.color === "#FF5733") {
+      newRect.color = "#000000";
+    } else {
+      newRect.color = "#FF5733";
+    }
+
+    let res = { 
+      type: "update component", 
+      component: "rect", 
+      entityId: newRect.entityId,
+      data: { w: newRect.w, h: newRect.h, color: newRect.color, entityId: newRect.entityId },
+    };
+
+    return res;
+  }
+}
+
+export { createRectEntity, createUpdateRectMessage };
