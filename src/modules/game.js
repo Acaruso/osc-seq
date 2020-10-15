@@ -43,10 +43,7 @@ function getGame(options = {}) {
   
   createBallEntity(game.state);
   createRectEntity(game.state, { x: 50, y: 50, w: 50, h: 50, color: "#000000" });
-  
-  console.log('!!!!!!!!!!!!!!!!!!!!')
-  console.log(game.state)
-  
+    
   game.inputQueue = new MessageQueue();
   game.queue = new MessageQueue();
 
