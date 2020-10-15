@@ -44,12 +44,6 @@ function getGame(options = {}) {
   createBallEntity(game.state);
   createRectEntity(game.state, { x: 50, y: 50, w: 50, h: 50, color: "#000000" });
 
-  // console.log(game.state)
-
-  // game.state.components.userInput.data[0] = {blah: "aaaa"};
-
-  // console.log(game.state)
-
   game.inputQueue = new MessageQueue();
   game.queue = new MessageQueue();
 
@@ -172,9 +166,6 @@ function controlSystem(state) {
     state.components,
   );
 
-  // log('clickable rects')
-  // log(clickableRects)
-
   for (const rect of clickableRects) {
     const msg = createUpdateRectMessage(rect, state.components.userInput);
     msg ? out.push(msg) : null;
@@ -189,7 +180,6 @@ function controlSystem(state) {
   out.push({
     type: "update component",
     component: "userInput",
-    // entityId: -1,
     data: newUserInput,
   })
 
