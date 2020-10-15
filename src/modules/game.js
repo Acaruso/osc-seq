@@ -154,9 +154,11 @@ function controlSystem(state) {
     ["position", "controllable"],
     state.components,
   );
+  
+  const userInput = getComponent(state.components.userInput);
 
   for (const ball of controllableBalls) {
-    const msg = createUpdateBallPositionMessage(ball, state.components.userInput);
+    const msg = createUpdateBallPositionMessage(ball, userInput);
     msg ? out.push(msg) : null;
   }
 
@@ -167,13 +169,13 @@ function controlSystem(state) {
   );
 
   for (const rect of clickableRects) {
-    const msg = createUpdateRectMessage(rect, state.components.userInput);
+    const msg = createUpdateRectMessage(rect, userInput);
     msg ? out.push(msg) : null;
   }
   
   // unset userInput.click
   const newUserInput = { 
-    ...getComponent(state.components.userInput),
+    ...userInput,
     click: false,
   };
 

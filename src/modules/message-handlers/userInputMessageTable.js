@@ -8,19 +8,7 @@ function createUserInputMessageTable(state) {
         ...getComponent(state.components.userInput),
         right: true
       };
-
-      // let newUserInput = { 
-      //   ...state.components.userInput.data[0],
-      //   right: true
-      // };
-
-      // state.components.userInput.data[0] = newUserInput;
-
-      // state.components.userInput.data[0] = {blah: "asdf"};
-
       updateComponent(state.components.userInput, newUserInput);
-      
-      // state.components.userInput = newUserInput;
     },
     "ArrowRight:keyup": (message) => {
       let newUserInput = {
@@ -28,7 +16,6 @@ function createUserInputMessageTable(state) {
         right: false
       };
       updateComponent(state.components.userInput, newUserInput);
-      // state.components.userInput = newUserInput;
     },
     "ArrowLeft:keydown": (message) => {
       let newUserInput = { 
@@ -36,7 +23,6 @@ function createUserInputMessageTable(state) {
         left: true
       };
       updateComponent(state.components.userInput, newUserInput);
-      // state.components.userInput = newUserInput;
     },
     "ArrowLeft:keyup": (message) => {
       let newUserInput = { 
@@ -44,7 +30,6 @@ function createUserInputMessageTable(state) {
         left: false
       };
       updateComponent(state.components.userInput, newUserInput);
-      // state.components.userInput = newUserInput;
     },
     "ArrowUp:keydown": (message) => {
       let newUserInput = { 
@@ -52,7 +37,6 @@ function createUserInputMessageTable(state) {
         up: true
       };
       updateComponent(state.components.userInput, newUserInput);
-      // state.components.userInput = newUserInput;
     },
     "ArrowUp:keyup": (message) => {
       let newUserInput = { 
@@ -60,7 +44,6 @@ function createUserInputMessageTable(state) {
         up: false
       };
       updateComponent(state.components.userInput, newUserInput);
-      // state.components.userInput = newUserInput;
     },
     "ArrowDown:keydown": (message) => {
       let newUserInput = { 
@@ -68,7 +51,6 @@ function createUserInputMessageTable(state) {
         down: true
       };
       updateComponent(state.components.userInput, newUserInput);
-      // state.components.userInput = newUserInput;
     },
     "ArrowDown:keyup": (message) => {
       let newUserInput = { 
@@ -76,7 +58,6 @@ function createUserInputMessageTable(state) {
         down: false
       };
       updateComponent(state.components.userInput, newUserInput);
-      // state.components.userInput = newUserInput;
     },
     "Enter:keydown": (message) => {
       console.log(state);
@@ -85,7 +66,6 @@ function createUserInputMessageTable(state) {
         enter: true
       };
       updateComponent(state.components.userInput, newUserInput);
-      // state.components.userInput = newUserInput;
     },
     "Enter:keyup": (message) => {
       let newUserInput = { 
@@ -93,7 +73,6 @@ function createUserInputMessageTable(state) {
         enter: false
       };
       updateComponent(state.components.userInput, newUserInput);
-      // state.components.userInput = newUserInput;
     },
     "mouse click": (message) => {
       let newUserInput = { 
@@ -103,7 +82,6 @@ function createUserInputMessageTable(state) {
         cy: message.data.cy,
       };
       updateComponent(state.components.userInput, newUserInput);
-      // state.components.userInput = newUserInput;
     },
   };
 }
