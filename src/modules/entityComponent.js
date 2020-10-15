@@ -52,11 +52,11 @@ function getComponent(compTable, entityId) {
 }
 
 function join(compNames, compTables) {
-  let rows = [];
   const primaryCompName = compNames[0];
   const siblingCompNames = compNames.slice(1);
-
   const primaryCompTable = compTables[primaryCompName];
+  let rows = [];
+
   for (const row of primaryCompTable.data) {
     let newRow = { ...row };
     const entityId = row.entityId;
@@ -73,27 +73,6 @@ function join(compNames, compTables) {
 
   return rows;
 }
-
-// function join(primaryCompName, siblingCompNames, compTables) {
-//   let rows = [];
-
-//   const primaryCompTable = compTables[primaryCompName];
-//   for (const row of primaryCompTable.data) {
-//     let newRow = { ...row };
-//     const entityId = row.entityId;
-//     for (const siblingCompName of siblingCompNames) {
-//       const siblingCompTable = compTables[siblingCompName];
-//       if (siblingCompTable.index.hasOwnProperty(entityId)) {
-//         const siblingRowIndex = siblingCompTable.index[entityId];
-//         const siblingRow = siblingCompTable.data[siblingRowIndex];
-//         newRow = addCols(newRow, siblingRow);
-//       }
-//     }
-//     rows.push(newRow);
-//   }
-
-//   return rows;
-// }
 
 function addCols(row, newRow) {
   for (const key in newRow) {

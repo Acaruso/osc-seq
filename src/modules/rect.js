@@ -45,7 +45,7 @@ function createUpdateRectMessage(rect, userInput) {
       type: "update component", 
       component: "rect", 
       entityId: newRect.entityId,
-      data: { w: newRect.w, h: newRect.h, color: newRect.color },
+      data: { w: newRect.w, h: newRect.h, color: newRect.color, entityId: newRect.entityId },
     };
 
     return res;
