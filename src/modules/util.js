@@ -54,7 +54,7 @@ function isCoordInsideRect(coord, rect) {
   return res;
 }
 
-function log(s) {
+function log(s = "") {
   console.log(s);
 }
 

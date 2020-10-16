@@ -1,31 +1,42 @@
 import { addEntity, addComponent } from "./entityComponent";
 
-function createBallEntity(state) {
-  const newEntityId = addEntity(state.entities);
+function createBallEntity(ecManager) {
+  const newEntityId = ecManager.addEntity();
 
-  addComponent(
-    { x: 0, y: 0 }, 
-    state.components.position,
-    newEntityId,
-  );
-  addComponent(
-    { radius: 10 }, 
-    state.components.ball,
-    newEntityId,
-  );
-  addComponent(
-    { }, 
-    state.components.drawable,
-    newEntityId,
-  );
-  addComponent(
-    { }, 
-    state.components.controllable,
-    newEntityId,
-  );
+  ecManager.addComponent({ x: 0, y: 0 }, "position", newEntityId);
+  ecManager.addComponent({ radius: 10 }, "ball", newEntityId);
+  ecManager.addComponent({ }, "drawable", newEntityId);
+  ecManager.addComponent({ }, "controllable", newEntityId);
 
   return newEntityId;
 }
+
+// function createBallEntity(state) {
+//   const newEntityId = addEntity(state.entities);
+
+//   addComponent(
+//     { x: 0, y: 0 }, 
+//     state.components.position,
+//     newEntityId,
+//   );
+//   addComponent(
+//     { radius: 10 }, 
+//     state.components.ball,
+//     newEntityId,
+//   );
+//   addComponent(
+//     { }, 
+//     state.components.drawable,
+//     newEntityId,
+//   );
+//   addComponent(
+//     { }, 
+//     state.components.controllable,
+//     newEntityId,
+//   );
+
+//   return newEntityId;
+// }
 
 function drawBall(ball, canvas) {
   let ctx = canvas.getContext("2d");

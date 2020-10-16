@@ -1,34 +1,47 @@
 import { isCoordInsideRect } from "./util";
 import { addEntity, addComponent } from "./entityComponent";
 
-function createRectEntity(state, options = {}) {
+function createRectEntity(ecManager, options = {}) {
   const { x, y, w, h, color } = options;
 
-  const newEntityId = addEntity(state.entities);
+  const newEntityId = ecManager.addEntity();
 
-  addComponent(
-    { x, y }, 
-    state.components.position,
-    newEntityId,
-  );
-  addComponent(
-    { w, h, color }, 
-    state.components.rect,
-    newEntityId,
-  );
-  addComponent(
-    { }, 
-    state.components.drawable,
-    newEntityId,
-  );
-  addComponent(
-    { }, 
-    state.components.clickable,
-    newEntityId,
-  );
+  ecManager.addComponent({ x, y }, "position", newEntityId);
+  ecManager.addComponent({ w, h, color }, "rect", newEntityId);
+  ecManager.addComponent({ }, "drawable", newEntityId);
+  ecManager.addComponent({ }, "clickable", newEntityId);
 
   return newEntityId;
 }
+
+// function createRectEntity(state, options = {}) {
+//   const { x, y, w, h, color } = options;
+
+//   const newEntityId = addEntity(state.entities);
+
+//   addComponent(
+//     { x, y }, 
+//     state.components.position,
+//     newEntityId,
+//   );
+//   addComponent(
+//     { w, h, color }, 
+//     state.components.rect,
+//     newEntityId,
+//   );
+//   addComponent(
+//     { }, 
+//     state.components.drawable,
+//     newEntityId,
+//   );
+//   addComponent(
+//     { }, 
+//     state.components.clickable,
+//     newEntityId,
+//   );
+
+//   return newEntityId;
+// }
 
 function createUpdateRectMessage(rect, userInput) {
   const coord = { x: userInput.cx, y: userInput.cy };

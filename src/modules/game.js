@@ -12,7 +12,13 @@ import { getRootMessageTable } from "./message-handlers/rootMessageTable";
 import { getGrid } from './grid';
 import { createRectEntity, createUpdateRectMessage } from "./rect";
 import { getTimeDivisions } from './time';
-import { createComponentTable, addComponent, getComponent, join } from "./entityComponent";
+import {
+  createEcManager,
+  createComponentTable,
+  addComponent,
+  getComponent,
+  join,
+} from "./entityComponent";
 import { createUserInputMessageTable } from './message-handlers/userInputMessageTable';
 
 function getGame(options = {}) {
@@ -27,22 +33,43 @@ function getGame(options = {}) {
   game.state.canvas = document.getElementById("myCanvas");
   game.state.clock = 0;
 
-  game.state.entities = [];
+  // new ///////////////////////////////////////////////////////
 
-  game.state.components = {
-    position: createComponentTable(),
-    ball: createComponentTable(),
-    rect: createComponentTable(),
-    drawable: createComponentTable(),
-    controllable: createComponentTable(),
-    clickable: createComponentTable(),
-    userInput: createComponentTable({ isSingleton: true }),
-  };
+  game.state.ecManager = createEcManager();
+  game.state.ecManager.createComponentTable("position");
+  game.state.ecManager.createComponentTable("ball");
+  game.state.ecManager.createComponentTable("rect");
+  game.state.ecManager.createComponentTable("drawable");
+  game.state.ecManager.createComponentTable("controllable");
+  game.state.ecManager.createComponentTable("clickable");
+  game.state.ecManager.createComponentTable("userInput", { isSingleton: true });
 
-  addComponent(createUserInput(), game.state.components.userInput);
+  game.state.ecManager.addComponent(createUserInput(), "userInput");
+
+  createBallEntity(game.state.ecManager);
+  createRectEntity(game.state.ecManager, { x: 50, y: 50, w: 50, h: 50, color: "#000000" });
+
+  console.log('---------------------------------')
+  console.log(game.state.ecManager)
+
+  // end new ///////////////////////////////////////////////////
+
+  // game.state.entities = [];
+
+  // game.state.components = {
+  //   position: createComponentTable(),
+  //   ball: createComponentTable(),
+  //   rect: createComponentTable(),
+  //   drawable: createComponentTable(),
+  //   controllable: createComponentTable(),
+  //   clickable: createComponentTable(),
+  //   userInput: createComponentTable({ isSingleton: true }),
+  // };
+
+  // addComponent(createUserInput(), game.state.components.userInput);
   
-  createBallEntity(game.state);
-  createRectEntity(game.state, { x: 50, y: 50, w: 50, h: 50, color: "#000000" });
+  // createBallEntity(game.state);
+  // createRectEntity(game.state, { x: 50, y: 50, w: 50, h: 50, color: "#000000" });
     
   game.inputQueue = new MessageQueue();
   game.queue = new MessageQueue();
@@ -117,10 +144,7 @@ function drawSystem(state) {
 function drawBallsSystem(state) {
   let out = [];
     
-  let drawableBalls = join(
-    ["ball", "position", "drawable"],
-    state.components,
-  );
+  let drawableBalls = state.ecManager.join(["ball", "position", "drawable"]);
   
   for (const ball of drawableBalls) {
     out.push({ type: "draw ball", data: ball });
@@ -132,10 +156,7 @@ function drawBallsSystem(state) {
 function drawRectsSystem(state) {
   let out = [];
   
-  let drawableRects = join(
-    ["rect", "position", "drawable"],
-    state.components,
-  );
+  let drawableRects = state.ecManager.join(["rect", "position", "drawable"]);
 
   for (const rect of drawableRects) {
     out.push({ type: "draw rect", data: rect });
@@ -147,22 +168,16 @@ function drawRectsSystem(state) {
 function controlSystem(state) {
   let out = [];
 
-  let controllableBalls = join(
-    ["ball", "position", "controllable"],
-    state.components,
-  );
+  let controllableBalls = state.ecManager.join(["ball", "position", "controllable"]);
   
-  const userInput = getComponent(state.components.userInput);
+  const userInput = state.ecManager.getComponent("userInput");
 
   for (const ball of controllableBalls) {
     const msg = createUpdateBallPositionMessage(ball, userInput);
     msg ? out.push(msg) : null;
   }
 
-  let clickableRects = join(
-    ["rect", "position", "clickable"],
-    state.components,
-  );
+  let clickableRects = state.ecManager.join(["rect", "position", "clickable"]);
 
   for (const rect of clickableRects) {
     const msg = createUpdateRectMessage(rect, userInput);

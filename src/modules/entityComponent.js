@@ -1,5 +1,41 @@
 import { log } from "./util";
 
+function createEcManager() {
+  let ecManager = {};
+
+  ecManager.entities = [];
+  ecManager.components = {};
+
+  ecManager.createComponentTable = function(tableName, options = {}) {
+    this.components[tableName] = createComponentTable(options);
+  };
+
+  ecManager.addEntity = function(options = {}) {
+    return addEntity(this.entities, options);
+  };
+
+  ecManager.addComponent = function(comp, tableName, entityId) {
+    const compTable = this.components[tableName];
+    addComponent(comp, compTable, entityId);
+  };
+
+  ecManager.updateComponent = function(comp, tableName, entityId) {
+    const compTable = this.components[tableName];
+    updateComponent(compTable, comp, entityId);
+  };
+
+  ecManager.getComponent = function(tableName, entityId) {
+    const compTable = this.components[tableName];
+    return getComponent(compTable, entityId);
+  };
+
+  ecManager.join = function(compNames) {
+    return join(compNames, this.components);
+  };
+
+  return ecManager;
+}
+
 function createComponentTable(options = {}) {
   const isSingleton = options.isSingleton ? options.isSingleton : false;
   let components = {
@@ -81,4 +117,12 @@ function addCols(row, newRow) {
   return row;
 }
 
-export { createComponentTable, addEntity, addComponent, updateComponent, getComponent, join };
+export {
+  createEcManager,
+  createComponentTable,
+  addEntity,
+  addComponent,
+  updateComponent,
+  getComponent,
+  join,
+};
