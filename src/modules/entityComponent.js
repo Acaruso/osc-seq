@@ -6,8 +6,8 @@ function createEcManager() {
   ecManager.entities = [];
   ecManager.components = {};
 
-  ecManager.createComponentTable = function(tableName, options = {}) {
-    this.components[tableName] = createComponentTable(options);
+  ecManager.createComponentTable = function(tableName, schema, options = {}) {
+    this.components[tableName] = createComponentTable(schema, options);
   };
 
   ecManager.addEntity = function(options = {}) {
@@ -36,11 +36,12 @@ function createEcManager() {
   return ecManager;
 }
 
-function createComponentTable(options = {}) {
+function createComponentTable(schema, options = {}) {
   const isSingleton = options.isSingleton ? options.isSingleton : false;
   let components = {
     index: {},
     data: [],
+    schema,
     isSingleton,
   };
   return components;

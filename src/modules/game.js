@@ -33,43 +33,24 @@ function getGame(options = {}) {
   game.state.canvas = document.getElementById("myCanvas");
   game.state.clock = 0;
 
-  // new ///////////////////////////////////////////////////////
-
   game.state.ecManager = createEcManager();
-  game.state.ecManager.createComponentTable("position");
-  game.state.ecManager.createComponentTable("ball");
-  game.state.ecManager.createComponentTable("rect");
-  game.state.ecManager.createComponentTable("drawable");
-  game.state.ecManager.createComponentTable("controllable");
-  game.state.ecManager.createComponentTable("clickable");
-  game.state.ecManager.createComponentTable("userInput", { isSingleton: true });
+
+  game.state.ecManager.createComponentTable("position", ["x", "y"]);
+  game.state.ecManager.createComponentTable("ball", ["radius"]);
+  game.state.ecManager.createComponentTable("rect", ["w", "h", "color"]);
+  game.state.ecManager.createComponentTable("drawable", []);
+  game.state.ecManager.createComponentTable("controllable", []);
+  game.state.ecManager.createComponentTable("clickable", []);
+  game.state.ecManager.createComponentTable(
+    "userInput", 
+    ["right", "left", "up", "down", "enter", "click", "cx", "cy"], 
+    { isSingleton: true }
+  );
 
   game.state.ecManager.addComponent(createUserInput(), "userInput");
 
   createBallEntity(game.state.ecManager);
   createRectEntity(game.state.ecManager, { x: 50, y: 50, w: 50, h: 50, color: "#000000" });
-
-  console.log('---------------------------------')
-  console.log(game.state.ecManager)
-
-  // end new ///////////////////////////////////////////////////
-
-  // game.state.entities = [];
-
-  // game.state.components = {
-  //   position: createComponentTable(),
-  //   ball: createComponentTable(),
-  //   rect: createComponentTable(),
-  //   drawable: createComponentTable(),
-  //   controllable: createComponentTable(),
-  //   clickable: createComponentTable(),
-  //   userInput: createComponentTable({ isSingleton: true }),
-  // };
-
-  // addComponent(createUserInput(), game.state.components.userInput);
-  
-  // createBallEntity(game.state);
-  // createRectEntity(game.state, { x: 50, y: 50, w: 50, h: 50, color: "#000000" });
     
   game.inputQueue = new MessageQueue();
   game.queue = new MessageQueue();
