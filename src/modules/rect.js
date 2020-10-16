@@ -14,12 +14,12 @@ function createRectEntity(ecManager, options = {}) {
   return newEntityId;
 }
 
-function createUpdateRectMessage(rect, userInput) {
+function createUpdateRectMessage(clickableRect, userInput, ecManager) {
   const coord = { x: userInput.cx, y: userInput.cy };
-  if (userInput.click && isCoordInsideRect(coord, rect)) {
-    let newRect = { ...rect };
+  if (userInput.click && isCoordInsideRect(coord, clickableRect)) {
+    let newRect = ecManager.project(clickableRect, "rect");
 
-    if (rect.color === "#FF5733") {
+    if (newRect.color === "#FF5733") {
       newRect.color = "#000000";
     } else {
       newRect.color = "#FF5733";
@@ -29,7 +29,7 @@ function createUpdateRectMessage(rect, userInput) {
       type: "update component", 
       component: "rect", 
       entityId: newRect.entityId,
-      data: { w: newRect.w, h: newRect.h, color: newRect.color, entityId: newRect.entityId },
+      data: newRect,
     };
 
     return res;

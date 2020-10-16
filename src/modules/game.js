@@ -160,8 +160,8 @@ function controlSystem(state) {
 
   let clickableRects = state.ecManager.join(["rect", "position", "clickable"]);
 
-  for (const rect of clickableRects) {
-    const msg = createUpdateRectMessage(rect, userInput);
+  for (const clickableRect of clickableRects) {
+    const msg = createUpdateRectMessage(clickableRect, userInput, state.ecManager);
     msg ? out.push(msg) : null;
   }
   

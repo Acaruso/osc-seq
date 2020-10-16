@@ -33,6 +33,19 @@ function createEcManager() {
     return join(compNames, this.components);
   };
 
+  ecManager.project = function(data, tableName) {
+    const compTable = this.components[tableName];
+    const schema = compTable.schema;
+
+    let out = { entityId: data.entityId };
+
+    for (const colName of schema) {
+      out[colName] = data[colName];
+    }
+
+    return out;
+  }
+
   return ecManager;
 }
 
