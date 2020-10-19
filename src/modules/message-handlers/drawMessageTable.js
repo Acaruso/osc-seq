@@ -2,7 +2,7 @@ import { drawBall } from "./../ball";
 import { drawRect } from "./../util";
 import { drawGrid } from "./../grid";
 
-function getDrawMessageTable(state) {
+function createDrawMessageTable(state) {
   return {
     "clear screen": (message) => {
       let ctx = state.canvas.getContext("2d");
@@ -20,4 +20,4 @@ function getDrawMessageTable(state) {
   };
 }
 
-export { getDrawMessageTable };
+export { createDrawMessageTable };

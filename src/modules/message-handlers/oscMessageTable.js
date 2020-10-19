@@ -1,4 +1,4 @@
-function getOscMessageTable(state) {
+function createOscMessageTable(state) {
   return {
     "osc trigger 1": (message) => {
       if (state.clock % 32 === 0) {
@@ -13,4 +13,4 @@ function getOscMessageTable(state) {
   };
 }
 
-export { getOscMessageTable };
+export { createOscMessageTable };

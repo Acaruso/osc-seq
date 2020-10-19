@@ -1,18 +1,18 @@
-import { getOscMessageTable } from "./oscMessageTable";
-import { getDrawMessageTable } from "./drawMessageTable";
-import { getUpdateMessageTable } from "./updateMessageTable";
+import { createOscMessageTable } from "./oscMessageTable";
+import { createDrawMessageTable } from "./drawMessageTable";
+import { createUpdateMessageTable } from "./updateMessageTable";
 
-function getRootMessageTable(state) {
+function createRootMessageTable(state) {
   const rootMessageTable = {
     "end of game loop": (message) => { },
   };
 
   return {
     ...rootMessageTable,
-    ...getOscMessageTable(state),
-    ...getDrawMessageTable(state),
-    ...getUpdateMessageTable(state),
+    ...createOscMessageTable(state),
+    ...createDrawMessageTable(state),
+    ...createUpdateMessageTable(state),
   };
 }
 
-export { getRootMessageTable };
+export { createRootMessageTable };

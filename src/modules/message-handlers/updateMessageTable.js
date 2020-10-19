@@ -1,4 +1,4 @@
-function getUpdateMessageTable(state) {
+function createUpdateMessageTable(state) {
   return {
     "update component": (message) => {
       const comp = message.data;
@@ -8,4 +8,4 @@ function getUpdateMessageTable(state) {
   };
 }
 
-export { getUpdateMessageTable };
+export { createUpdateMessageTable };

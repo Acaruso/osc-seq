@@ -19,10 +19,8 @@ function createEcManager() {
     addComponent(comp, compTable, entityId);
   };
 
-  // ecManager.updateComponent = function(comp, tableName, entityId) {
   ecManager.updateComponent = function(comp, tableName) {
     const compTable = this.components[tableName];
-    // updateComponent(compTable, comp, entityId);
     updateComponent(compTable, comp);
   };
 
@@ -111,7 +109,6 @@ function addComponent(comp, compTable, entityId) {
   }
 }
 
-// function updateComponent(compTable, comp, entityId) {
 function updateComponent(compTable, comp) {
   if (compTable.isSingleton) {
     compTable.data[0] = comp;
