@@ -7,7 +7,7 @@ function createEcManager() {
   ecManager.components = {};
 
   ecManager.createComponentTable = function(tableName, schema, options = {}) {
-    this.components[tableName] = createComponentTable(schema, options);
+    this.components[tableName] = createComponentTable(tableName, schema, options);
   };
 
   ecManager.addEntity = function(options = {}) {
@@ -19,9 +19,11 @@ function createEcManager() {
     addComponent(comp, compTable, entityId);
   };
 
-  ecManager.updateComponent = function(comp, tableName, entityId) {
+  // ecManager.updateComponent = function(comp, tableName, entityId) {
+  ecManager.updateComponent = function(comp, tableName) {
     const compTable = this.components[tableName];
-    updateComponent(compTable, comp, entityId);
+    // updateComponent(compTable, comp, entityId);
+    updateComponent(compTable, comp);
   };
 
   ecManager.getComponent = function(tableName, entityId) {
@@ -46,14 +48,40 @@ function createEcManager() {
     return out;
   }
 
+  ecManager.join2 = function(compNames) {
+    const compTables = this.components;
+    const primaryCompName = compNames[0];
+    const siblingCompNames = compNames.slice(1);
+    const primaryCompTable = compTables[primaryCompName];
+    let rows = [];
+  
+    for (const row of primaryCompTable.data) {
+      let newRow = {};
+      newRow[primaryCompName] = { ...row };
+      const entityId = row.entityId;
+      for (const siblingCompName of siblingCompNames) {
+        const siblingCompTable = compTables[siblingCompName];
+        if (siblingCompTable.index.hasOwnProperty(entityId)) {
+          const siblingRowIndex = siblingCompTable.index[entityId];
+          const siblingRow = siblingCompTable.data[siblingRowIndex];
+          newRow[siblingCompName] = { ...siblingRow };
+        }
+      }
+      rows.push(newRow);
+    }
+  
+    return rows;
+  }
+
   return ecManager;
 }
 
-function createComponentTable(schema, options = {}) {
+function createComponentTable(tableName, schema, options = {}) {
   const isSingleton = options.isSingleton ? options.isSingleton : false;
   let components = {
     index: {},
     data: [],
+    tableName,
     schema,
     isSingleton,
   };
@@ -83,11 +111,12 @@ function addComponent(comp, compTable, entityId) {
   }
 }
 
-function updateComponent(compTable, comp, entityId) {
+// function updateComponent(compTable, comp, entityId) {
+function updateComponent(compTable, comp) {
   if (compTable.isSingleton) {
     compTable.data[0] = comp;
   } else {
-    const compIndex = compTable.index[entityId];
+    const compIndex = compTable.index[comp.entityId];
     compTable.data[compIndex] = comp;
   }
 }

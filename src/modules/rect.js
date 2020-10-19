@@ -1,38 +1,49 @@
 import { isCoordInsideRect } from "./util";
-import { addEntity, addComponent } from "./entityComponent";
+
+const defaultOptions = {
+  drawable: true, 
+  clickable: true, 
+  toggleable: true,
+  gridRect: false,
+};
 
 function createRectEntity(ecManager, options = {}) {
-  const { x, y, w, h, color } = options;
+  options = { ...defaultOptions, ...options };
+  const { 
+    x, y, w, h, color, altColor, drawable, 
+    clickable, toggleable, gridRect 
+  } = options;
 
   const newEntityId = ecManager.addEntity();
 
   ecManager.addComponent({ x, y }, "position", newEntityId);
-  ecManager.addComponent({ w, h, color }, "rect", newEntityId);
-  ecManager.addComponent({ }, "drawable", newEntityId);
-  ecManager.addComponent({ }, "clickable", newEntityId);
+  ecManager.addComponent({ w, h, color, altColor, gridRect }, "rect", newEntityId);
+
+  if (drawable) {
+    ecManager.addComponent({}, "drawable", newEntityId);
+  }
+  if (clickable) {
+    ecManager.addComponent({}, "clickable", newEntityId);
+  }
+  if (toggleable) {
+    ecManager.addComponent({ isToggled: false }, "toggleable", newEntityId);
+  }
 
   return newEntityId;
 }
 
-function createUpdateRectMessage(clickableRect, userInput, ecManager) {
+function createUpdateRectMessage(rect, position, toggleable, userInput) {
   const coord = { x: userInput.cx, y: userInput.cy };
-  if (userInput.click && isCoordInsideRect(coord, clickableRect)) {
-    let newRect = ecManager.project(clickableRect, "rect");
 
-    if (newRect.color === "#FF5733") {
-      newRect.color = "#000000";
-    } else {
-      newRect.color = "#FF5733";
-    }
+  if (userInput.click && isCoordInsideRect(coord, rect, position)) {
+    let newToggleable = { ...toggleable };
+    newToggleable.isToggled = !newToggleable.isToggled;
 
-    let res = { 
-      type: "update component", 
-      component: "rect", 
-      entityId: newRect.entityId,
-      data: newRect,
+    return {
+      type: "update component",
+      component: "toggleable",
+      data: newToggleable,
     };
-
-    return res;
   }
 }
 

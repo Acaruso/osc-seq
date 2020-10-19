@@ -1,6 +1,3 @@
-import { getComponent, updateComponent } from "./../entityComponent";
-import { log } from "./../util";
-
 function createUserInputMessageTable(state) {
   return {
     "ArrowRight:keydown": (message) => {
@@ -28,7 +25,7 @@ function createUserInputMessageTable(state) {
       update(state.ecManager, { down: false });
     },
     "Enter:keydown": (message) => {
-      console.log(state);
+      console.log(state.ecManager.components);
       update(state.ecManager, { enter: true });
     },
     "Enter:keyup": (message) => {

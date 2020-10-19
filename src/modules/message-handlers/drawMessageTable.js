@@ -1,5 +1,5 @@
 import { drawBall } from "./../ball";
-import { drawRect, strokeRect } from "./../util";
+import { drawRect } from "./../util";
 import { drawGrid } from "./../grid";
 
 function getDrawMessageTable(state) {

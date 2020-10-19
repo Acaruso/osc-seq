@@ -11,47 +11,17 @@ function createBallEntity(ecManager) {
   return newEntityId;
 }
 
-// function createBallEntity(state) {
-//   const newEntityId = addEntity(state.entities);
-
-//   addComponent(
-//     { x: 0, y: 0 }, 
-//     state.components.position,
-//     newEntityId,
-//   );
-//   addComponent(
-//     { radius: 10 }, 
-//     state.components.ball,
-//     newEntityId,
-//   );
-//   addComponent(
-//     { }, 
-//     state.components.drawable,
-//     newEntityId,
-//   );
-//   addComponent(
-//     { }, 
-//     state.components.controllable,
-//     newEntityId,
-//   );
-
-//   return newEntityId;
-// }
-
-function drawBall(ball, canvas) {
+function drawBall({ ball, position }, canvas) {
   let ctx = canvas.getContext("2d");
   ctx.beginPath();
-  ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+  ctx.arc(position.x, position.y, ball.radius, 0, Math.PI * 2);
   ctx.fillStyle = "#0095DD";
   ctx.fill();
   ctx.closePath();
 }
 
-function createUpdateBallPositionMessage(row, userInput) {
-  let newPosition = {
-    x: row.x,
-    y: row.y,
-  };
+function createUpdateBallPositionMessage(position, userInput) {
+  let newPosition = { ...position };
 
   if (userInput.right) {
     newPosition.x += 2;
@@ -71,7 +41,6 @@ function createUpdateBallPositionMessage(row, userInput) {
   return {
     type: "update component",
     component: "position",
-    entityId: row.entityId,
     data: newPosition
   };
 }

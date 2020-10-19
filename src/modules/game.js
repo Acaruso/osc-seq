@@ -1,5 +1,4 @@
 import { Client } from 'node-osc';
-import { log } from "./util";
 import { createBallEntity, createUpdateBallPositionMessage } from "./ball";
 import {
   createUserInput,
@@ -9,17 +8,12 @@ import {
 import { MessageQueue } from "./messageQueue";
 import { Logger } from "./logger";
 import { getRootMessageTable } from "./message-handlers/rootMessageTable";
-import { getGrid } from './grid';
+import { createGridEntity } from './grid';
 import { createRectEntity, createUpdateRectMessage } from "./rect";
 import { getTimeDivisions } from './time';
-import {
-  createEcManager,
-  createComponentTable,
-  addComponent,
-  getComponent,
-  join,
-} from "./entityComponent";
+import { createEcManager } from "./entityComponent";
 import { createUserInputMessageTable } from './message-handlers/userInputMessageTable';
+import { createClockGrid } from "./clockGrid";
 
 function getGame(options = {}) {
   let game = {};
@@ -31,16 +25,26 @@ function getGame(options = {}) {
 
   game.state.oscClient = new Client('127.0.0.1', 3333);
   game.state.canvas = document.getElementById("myCanvas");
-  game.state.clock = 0;
+  // game.state.clock = 0;
 
   game.state.ecManager = createEcManager();
 
   game.state.ecManager.createComponentTable("position", ["x", "y"]);
   game.state.ecManager.createComponentTable("ball", ["radius"]);
-  game.state.ecManager.createComponentTable("rect", ["w", "h", "color"]);
+  game.state.ecManager.createComponentTable(
+    "rect", 
+    ["w", "h", "color", "altColor", "gridRect"]
+  );
+  game.state.ecManager.createComponentTable("grid", ["numRows", "numCols"]);
   game.state.ecManager.createComponentTable("drawable", []);
   game.state.ecManager.createComponentTable("controllable", []);
   game.state.ecManager.createComponentTable("clickable", []);
+  game.state.ecManager.createComponentTable("toggleable", ["isToggled"]);
+  game.state.ecManager.createComponentTable(
+    "clock", 
+    ["time"],
+    { isSingleton: true }
+  );
   game.state.ecManager.createComponentTable(
     "userInput", 
     ["right", "left", "up", "down", "enter", "click", "cx", "cy"], 
@@ -48,14 +52,24 @@ function getGame(options = {}) {
   );
 
   game.state.ecManager.addComponent(createUserInput(), "userInput");
+  game.state.ecManager.addComponent({ time: 0 }, "clock");
 
   createBallEntity(game.state.ecManager);
-  createRectEntity(game.state.ecManager, { x: 50, y: 50, w: 50, h: 50, color: "#000000" });
-    
+  createRectEntity(
+    game.state.ecManager, 
+    { x: 50, y: 50, w: 50, h: 50, color: "#1F5733", altColor: "#b2b2b2" }
+  );
+  createGridEntity(
+    game.state.ecManager, 
+    { numRows: 2, numCols: 4, cellWidth: 50, cellHeight: 50, x: 150, y: 150 }
+  );
+
+  createClockGrid(game.state.ecManager);
+
   game.inputQueue = new MessageQueue();
   game.queue = new MessageQueue();
 
-  game.state.time = getTimeDivisions(120);
+  game.state.timeDivisions = getTimeDivisions(120);
 
   addKeyboardHandlers(game.inputQueue);
   addMouseHandler(game.state, game.inputQueue);
@@ -85,8 +99,8 @@ function gameLoop(game) {
     { type: "osc trigger 1" },
     { type: "osc trigger 2" },
     controlSystem(game.state),
+    updateSystem(game.state),
     drawSystem(game.state),
-    { type: "update clock" },
     { type: "end of draw loop" },
   ]);
 
@@ -110,6 +124,22 @@ function handleMessages(queue, messageTable, logger, logging) {
   }
 }
 
+function updateSystem(state) {
+  let out = [];
+  const clock = state.ecManager.getComponent("clock");
+
+  let newClock = { ...clock };
+  newClock.time = (newClock.time + 1) % 4096;
+
+  out.push({
+    type: "update component",
+    component: "clock",
+    data: newClock,
+  });
+
+  return out;
+}
+
 function drawSystem(state) {
   let out = [];
 
@@ -125,10 +155,10 @@ function drawSystem(state) {
 function drawBallsSystem(state) {
   let out = [];
     
-  let drawableBalls = state.ecManager.join(["ball", "position", "drawable"]);
+  let rows = state.ecManager.join2(["ball", "position", "drawable"]);
   
-  for (const ball of drawableBalls) {
-    out.push({ type: "draw ball", data: ball });
+  for (const { ball, position } of rows) {
+    out.push({ type: "draw ball", data: { ball, position } });
   }
 
   return out;
@@ -137,10 +167,11 @@ function drawBallsSystem(state) {
 function drawRectsSystem(state) {
   let out = [];
   
-  let drawableRects = state.ecManager.join(["rect", "position", "drawable"]);
+  let rows = state.ecManager.join2(["rect", "position", "drawable", "toggleable"]);
 
-  for (const rect of drawableRects) {
-    out.push({ type: "draw rect", data: rect });
+  for (const { rect, position, toggleable } of rows) {
+    rect.color = toggleable.isToggled ? rect.altColor : rect.color;
+    out.push({ type: "draw rect", data: { rect, position } });
   }
 
   return out;
@@ -149,33 +180,28 @@ function drawRectsSystem(state) {
 function controlSystem(state) {
   let out = [];
 
-  let controllableBalls = state.ecManager.join(["ball", "position", "controllable"]);
-  
   const userInput = state.ecManager.getComponent("userInput");
 
-  for (const ball of controllableBalls) {
-    const msg = createUpdateBallPositionMessage(ball, userInput);
+  let ballRows = state.ecManager.join2(["ball", "position", "controllable"]);
+  
+  for (const { position } of ballRows) {
+    const msg = createUpdateBallPositionMessage(position, userInput);
     msg ? out.push(msg) : null;
   }
 
-  let clickableRects = state.ecManager.join(["rect", "position", "clickable"]);
+  let rectRows = state.ecManager.join2(["rect", "position", "clickable", "toggleable"]);
 
-  for (const clickableRect of clickableRects) {
-    const msg = createUpdateRectMessage(clickableRect, userInput, state.ecManager);
+  for (const { rect, position, toggleable } of rectRows) {
+    const msg = createUpdateRectMessage(rect, position, toggleable, userInput);
     msg ? out.push(msg) : null;
   }
   
   // unset userInput.click
-  const newUserInput = { 
-    ...userInput,
-    click: false,
-  };
-
   out.push({
     type: "update component",
     component: "userInput",
-    data: newUserInput,
-  })
+    data: { ...userInput, click: false },
+  });
 
   return out;
 }
