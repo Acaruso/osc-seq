@@ -25,6 +25,7 @@ function createComponentTables(game) {
   game.state.ecManager.createComponentTable("controllable", []);
   game.state.ecManager.createComponentTable("clickable", []);
   game.state.ecManager.createComponentTable("toggleable", ["isToggled"]);
+  game.state.ecManager.createComponentTable("clockable", []);
   game.state.ecManager.createComponentTable(
     "clock", 
     ["time"],

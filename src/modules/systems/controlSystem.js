@@ -14,7 +14,7 @@ function controlSystem(state) {
   }
 
   let rectRows = state.ecManager.join2(["rect", "position", "clickable", "toggleable"]);
-
+  
   for (const { rect, position, toggleable } of rectRows) {
     const msg = createUpdateRectMessage(rect, position, toggleable, userInput);
     out.push(msg);

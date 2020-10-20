@@ -54,18 +54,24 @@ function createEcManager() {
     let rows = [];
   
     for (const row of primaryCompTable.data) {
+      let foundAllSiblings = true;
       let newRow = {};
       newRow[primaryCompName] = { ...row };
       const entityId = row.entityId;
       for (const siblingCompName of siblingCompNames) {
         const siblingCompTable = compTables[siblingCompName];
-        if (siblingCompTable.index.hasOwnProperty(entityId)) {
+        if (!siblingCompTable.index.hasOwnProperty(entityId)) {
+          foundAllSiblings = false;
+          break;
+        } else {
           const siblingRowIndex = siblingCompTable.index[entityId];
           const siblingRow = siblingCompTable.data[siblingRowIndex];
           newRow[siblingCompName] = { ...siblingRow };
         }
       }
-      rows.push(newRow);
+      if (foundAllSiblings) {
+        rows.push(newRow);
+      }
     }
   
     return rows;
