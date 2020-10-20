@@ -26,6 +26,7 @@ function createComponentTables(game) {
   game.state.ecManager.createComponentTable("clickable", []);
   game.state.ecManager.createComponentTable("toggleable", ["isToggled"]);
   game.state.ecManager.createComponentTable("clockable", []);
+  game.state.ecManager.createComponentTable("rectToGrid", ["gridId", "row", "col"]);
   game.state.ecManager.createComponentTable(
     "clock", 
     ["time"],
@@ -53,7 +54,15 @@ function createEntities(game) {
 
   createGridEntity(
     game.state.ecManager, 
-    { numRows: 2, numCols: 4, cellWidth: 50, cellHeight: 50, x: 150, y: 150 }
+    { 
+      numRows: 2, 
+      numCols: 4, 
+      cellWidth: 50, 
+      cellHeight: 50, 
+      x: 150, 
+      y: 150,
+      clickable: true,
+    }
   );
 
   createClockGridEntity(game.state.ecManager);

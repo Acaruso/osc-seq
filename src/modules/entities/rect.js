@@ -5,13 +5,17 @@ const defaultOptions = {
   clickable: true, 
   toggleable: true,
   gridRect: false,
+  gridId: -1,
+  row: -1,
+  col: -1,
 };
 
 function createRectEntity(ecManager, options = {}) {
   options = { ...defaultOptions, ...options };
   const { 
     x, y, w, h, color, altColor, drawable, 
-    clickable, toggleable, gridRect 
+    clickable, toggleable, gridRect, gridId,
+    row, col,
   } = options;
 
   const newEntityId = ecManager.addEntity();
@@ -27,6 +31,9 @@ function createRectEntity(ecManager, options = {}) {
   }
   if (toggleable) {
     ecManager.addComponent({ isToggled: false }, "toggleable", newEntityId);
+  }
+  if (gridRect) {
+    ecManager.addComponent({ gridId, row, col }, "rectToGrid", newEntityId);
   }
 
   return newEntityId;
