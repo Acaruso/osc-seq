@@ -4,7 +4,6 @@ import { MessageQueue } from "../messageQueue";
 import { Logger } from "../logger";
 import { createRootMessageTable } from "../message-handlers/rootMessageTable";
 import { createUserInputMessageTable } from '../message-handlers/userInputMessageTable';
-import { createTimeDivisions } from '../time';
 import { createEntitiesAndComps } from "./createEntitiesAndComps";
 import { updateSystem } from "./../systems/updateSystem";
 import { drawSystem } from "./../systems/drawSystem";
@@ -22,8 +21,6 @@ function createGame(options = {}) {
 
   game.inputQueue = new MessageQueue();
   game.queue = new MessageQueue();
-
-  game.state.timeDivisions = createTimeDivisions(120);
 
   addKeyboardHandlers(game.inputQueue);
   addMouseHandler(game.state, game.inputQueue);

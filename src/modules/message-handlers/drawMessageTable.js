@@ -1,6 +1,5 @@
 import { drawBall } from "../entities/ball";
 import { drawRect } from "./../entities/rect";
-import { drawGrid } from "../entities/grid";
 
 function createDrawMessageTable(state) {
   return {
@@ -13,9 +12,6 @@ function createDrawMessageTable(state) {
     },
     "draw rect": (message) => {
       drawRect(message.data, state.canvas);
-    },
-    "draw grid": (message) => {
-      drawGrid(message.data, state.canvas);
     },
   };
 }

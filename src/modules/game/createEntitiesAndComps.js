@@ -4,6 +4,7 @@ import { createBallEntity } from "../entities/ball";
 import { createRectEntity } from "../entities/rect";
 import { createGridEntity } from '../entities/grid';
 import { createClockGridEntity } from "../entities/clockGrid";
+import { createTimeDivision } from "../entities/timeDivision";
 
 function createEntitiesAndComps(game) {
   game.state.ecManager = createEcManager();
@@ -33,6 +34,11 @@ function createComponentTables(game) {
     { isSingleton: true }
   );
   game.state.ecManager.createComponentTable(
+    "timeDivision", 
+    ["n1", "n2", "n4", "n8", "n16"],
+    { isSingleton: true }
+  );
+  game.state.ecManager.createComponentTable(
     "userInput", 
     ["right", "left", "up", "down", "enter", "click", "cx", "cy"], 
     { isSingleton: true }
@@ -42,6 +48,7 @@ function createComponentTables(game) {
 function createSingletonComponents(game) {
   game.state.ecManager.addComponent(createUserInput(), "userInput");
   game.state.ecManager.addComponent({ time: 0 }, "clock");
+  game.state.ecManager.addComponent(createTimeDivision(120), "timeDivision");
 }
 
 function createEntities(game) {

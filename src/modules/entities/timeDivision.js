@@ -1,5 +1,5 @@
 // in beats per minute, a "beat" is a quarter note
-function createTimeDivisions(bpm) {
+function createTimeDivision(bpm) {
   // n4 = quarter note, etc
   // normally would be 60000 / bpm but we're clocking every 10 ms
   const n4 = 6000 / bpm;
@@ -10,4 +10,4 @@ function createTimeDivisions(bpm) {
   return { bpm, n1, n2, n4, n8, n16 };
 }
 
-export { createTimeDivisions };
+export { createTimeDivision };
