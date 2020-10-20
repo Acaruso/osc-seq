@@ -1,5 +1,5 @@
-import { createUpdateBallPositionMessage } from "../ball";
-import { createUpdateRectMessage } from "../rect";
+import { createUpdateBallPositionMessage } from "../entities/ball";
+import { createUpdateRectMessage } from "../entities/rect";
 
 function controlSystem(state) {
   let out = [];
@@ -10,14 +10,14 @@ function controlSystem(state) {
   
   for (const { position } of ballRows) {
     const msg = createUpdateBallPositionMessage(position, userInput);
-    msg ? out.push(msg) : null;
+    out.push(msg);
   }
 
   let rectRows = state.ecManager.join2(["rect", "position", "clickable", "toggleable"]);
 
   for (const { rect, position, toggleable } of rectRows) {
     const msg = createUpdateRectMessage(rect, position, toggleable, userInput);
-    msg ? out.push(msg) : null;
+    out.push(msg);
   }
   
   // unset userInput.click

@@ -1,9 +1,9 @@
 import { createEcManager } from "../entityComponent";
-import { createUserInput } from "../userInput";
-import { createBallEntity } from "../ball";
-import { createRectEntity } from "../rect";
-import { createGridEntity } from '../grid';
-import { createClockGridEntity } from "../clockGrid";
+import { createUserInput } from "../entities/userInput";
+import { createBallEntity } from "../entities/ball";
+import { createRectEntity } from "../entities/rect";
+import { createGridEntity } from '../entities/grid';
+import { createClockGridEntity } from "../entities/clockGrid";
 
 function createEntitiesAndComps(game) {
   game.state.ecManager = createEcManager();

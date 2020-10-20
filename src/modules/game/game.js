@@ -1,5 +1,5 @@
 import { Client } from 'node-osc';
-import { addKeyboardHandlers, addMouseHandler } from "../userInput";
+import { addKeyboardHandlers, addMouseHandler } from "../entities/userInput";
 import { MessageQueue } from "../messageQueue";
 import { Logger } from "../logger";
 import { createRootMessageTable } from "../message-handlers/rootMessageTable";

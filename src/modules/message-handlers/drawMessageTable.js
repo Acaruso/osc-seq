@@ -1,6 +1,6 @@
-import { drawBall } from "./../ball";
-import { drawRect } from "./../util";
-import { drawGrid } from "./../grid";
+import { drawBall } from "../entities/ball";
+import { drawRect } from "./../entities/rect";
+import { drawGrid } from "../entities/grid";
 
 function createDrawMessageTable(state) {
   return {

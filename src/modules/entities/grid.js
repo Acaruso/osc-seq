@@ -1,6 +1,5 @@
 import { createRectEntity } from "./rect";
 
-
 function createGridEntity(ecManager, options = {}) {
   const { numRows, numCols, cellWidth, cellHeight, x, y } = options;
   const newEntityId = ecManager.addEntity();

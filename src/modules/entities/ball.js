@@ -1,5 +1,3 @@
-import { addEntity, addComponent } from "./entityComponent";
-
 function createBallEntity(ecManager) {
   const newEntityId = ecManager.addEntity();
 
@@ -9,15 +7,6 @@ function createBallEntity(ecManager) {
   ecManager.addComponent({ }, "controllable", newEntityId);
 
   return newEntityId;
-}
-
-function drawBall({ ball, position }, canvas) {
-  let ctx = canvas.getContext("2d");
-  ctx.beginPath();
-  ctx.arc(position.x, position.y, ball.radius, 0, Math.PI * 2);
-  ctx.fillStyle = "#0095DD";
-  ctx.fill();
-  ctx.closePath();
 }
 
 function createUpdateBallPositionMessage(position, userInput) {
@@ -43,6 +32,15 @@ function createUpdateBallPositionMessage(position, userInput) {
     component: "position",
     data: newPosition
   };
+}
+
+function drawBall({ ball, position }, canvas) {
+  let ctx = canvas.getContext("2d");
+  ctx.beginPath();
+  ctx.arc(position.x, position.y, ball.radius, 0, Math.PI * 2);
+  ctx.fillStyle = "#0095DD";
+  ctx.fill();
+  ctx.closePath();
 }
 
 export { drawBall, createBallEntity, createUpdateBallPositionMessage };
