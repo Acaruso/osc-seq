@@ -6,22 +6,24 @@ import { createRootMessageTable } from "../message-handlers/rootMessageTable";
 import { createEntitiesAndComps } from "./createEntitiesAndComps";
 
 function createGame(options = {}) {
-  let game = {};
   let { logging } = options;
-  game.logger = logging ? new Logger("log.txt") : {};
-  game.state = {};
-  game.state.oscClient = new Client('127.0.0.1', 3333);
-  game.state.canvas = document.getElementById("myCanvas");
 
-  createEntitiesAndComps(game);
-
-  game.inputQueue = new MessageQueue();
-  game.queue = new MessageQueue();
+  let game = {
+    state: {
+      oscClient: new Client('127.0.0.1', 3333),
+      canvas: document.getElementById("myCanvas"),
+    },
+    logger: logging ? new Logger("log.txt") : {},
+    inputQueue: new MessageQueue(),
+    queue: new MessageQueue(),
+  };
 
   addKeyboardHandlers(game.inputQueue);
-  addMouseHandlers(game.state, game.inputQueue);
+  addMouseHandlers(game.inputQueue, game.state.canvas);
 
   game.messageTable = createRootMessageTable(game.state);
+
+  createEntitiesAndComps(game);
 
   return game;
 }
