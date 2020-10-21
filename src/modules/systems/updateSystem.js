@@ -12,27 +12,38 @@ function updateSystem(state) {
     data: newClock,
   });
 
-  const seqLength = 4;
-  const n4Clock = Math.floor(clock.time / timeDivision.n4) % seqLength;
-  const prevN4Clock = Math.floor((clock.time - 1) / timeDivision.n4) % seqLength;
+  const clockableGridsMsgs = updateClockableGridsSystem(
+    state.ecManager, 
+    clock, 
+    timeDivision
+  );
+
+  out.push(clockableGridsMsgs);
   
-  if (n4Clock !== prevN4Clock) {
-    const clockableGridRows = state.ecManager.join2(["grid", "clockable"]);
-
-    for (const { grid } of clockableGridRows) {
-      const rectRows = state.ecManager
-        .join2(["rect", "drawable", "toggleable", "rectToGrid"])
-        .filter(({ rectToGrid }) => rectToGrid.gridId === grid.entityId);
-
-      const res = updateClockableGridRectsSystem(rectRows, n4Clock);
-      out.push(res);
-    }
-  }
-
   return out;
 }
 
-function updateClockableGridRectsSystem(rows, clock) {
+function updateClockableGridsSystem(ecManager, clock, timeDivision) {
+  // for each clockable grid, get cur and prev tick and compare
+  // if different: get rects for grid, use these + current tick to update rects
+  
+  let out = [];
+
+  const clockableGridRows = ecManager.join2(["grid", "clockable"]);
+
+  for (const { grid } of clockableGridRows) {
+    const [tick, prevTick] = getTicks(clock.time, timeDivision.n4, grid.numCols);
+    if (tick !== prevTick) {
+      const rectRows = getRectsForGrid(grid.entityId, ecManager);
+      const rectsMsgs = updateClockableGridRectsSystem(rectRows, tick);
+      out.push(rectsMsgs);
+    }
+  }
+  
+  return out;
+}
+
+function updateClockableGridRectsSystem(rows, tick) {
   let out = [];
 
   // unset toggleable for all
@@ -49,7 +60,7 @@ function updateClockableGridRectsSystem(rows, clock) {
 
   // set toggleable for one
   for (const { toggleable, rectToGrid } of rows) {
-    if (clock === rectToGrid.col) {
+    if (tick === rectToGrid.col) {
       let newToggleable = { ...toggleable };
       newToggleable.isToggled = true;
 
@@ -62,6 +73,18 @@ function updateClockableGridRectsSystem(rows, clock) {
   }
 
   return out;
+}
+
+function getTicks(time, timeDivision, seqLength) {
+  const tick = Math.floor(time / timeDivision) % seqLength;
+  const prevTick = Math.floor((time - 1) / timeDivision) % seqLength;
+  return [tick, prevTick];
+}
+
+function getRectsForGrid(gridId, ecManager) {
+  return ecManager
+    .join2(["rect", "drawable", "toggleable", "rectToGrid"])
+    .filter(({ rectToGrid }) => rectToGrid.gridId === gridId);
 }
 
 export { updateSystem };

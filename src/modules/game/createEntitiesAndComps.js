@@ -4,6 +4,7 @@ import { createBallEntity } from "../entities/ball";
 import { createRectEntity } from "../entities/rect";
 import { createGridEntity } from '../entities/grid';
 import { createClockGridEntity } from "../entities/clockGrid";
+import { createSeqGridEntity } from "../entities/seqGrid";
 import { createTimeDivision } from "../entities/timeDivision";
 
 function createEntitiesAndComps(game) {
@@ -52,27 +53,44 @@ function createSingletonComponents(game) {
 }
 
 function createEntities(game) {
+  createSeqGridEntity(
+    game.state.ecManager, 
+    { x: 100, y: 100, numCols: 8 }
+  );
+
+  createSeqGridEntity(
+    game.state.ecManager, 
+    { x: 300, y: 300, numCols: 3 }
+  );
+
   createBallEntity(game.state.ecManager);
 
-  createRectEntity(
-    game.state.ecManager, 
-    { x: 50, y: 50, w: 50, h: 50, color: "#1F5733", altColor: "#B2B2B2" }
-  );
+  // createRectEntity(
+  //   game.state.ecManager, 
+  //   { x: 50, y: 50, w: 50, h: 50, color: "#1F5733", altColor: "#B2B2B2" }
+  // );
 
-  createGridEntity(
-    game.state.ecManager, 
-    { 
-      numRows: 2, 
-      numCols: 4, 
-      cellWidth: 50, 
-      cellHeight: 50, 
-      x: 150, 
-      y: 150,
-      clickable: true,
-    }
-  );
+  // createGridEntity(
+  //   game.state.ecManager, 
+  //   { 
+  //     numRows: 2, 
+  //     numCols: 4, 
+  //     cellWidth: 50, 
+  //     cellHeight: 50, 
+  //     x: 150, 
+  //     y: 150,
+  //     clickable: true,
+  //   }
+  // );
 
-  createClockGridEntity(game.state.ecManager);
+  // createClockGridEntity(
+  //   game.state.ecManager,
+  //   {
+  //     numCols: 4,
+  //     x: 40,
+  //     y: 40,
+  //   }
+  // );
 }
 
 export { createEntitiesAndComps };

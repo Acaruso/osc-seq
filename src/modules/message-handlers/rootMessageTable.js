@@ -1,6 +1,7 @@
 import { createOscMessageTable } from "./oscMessageTable";
 import { createDrawMessageTable } from "./drawMessageTable";
 import { createUpdateMessageTable } from "./updateMessageTable";
+import { createUserInputMessageTable } from './userInputMessageTable';
 
 function createRootMessageTable(state) {
   const rootMessageTable = {
@@ -12,6 +13,7 @@ function createRootMessageTable(state) {
     ...createOscMessageTable(state),
     ...createDrawMessageTable(state),
     ...createUpdateMessageTable(state),
+    ...createUserInputMessageTable(state),
   };
 }
 

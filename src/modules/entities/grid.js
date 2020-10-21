@@ -1,6 +1,12 @@
 import { createRectEntity } from "./rect";
 
 const defaultOptions = {
+  x: 0,
+  y: 0,
+  numRows: 2,
+  numCols: 4,
+  cellWidth: 50,
+  cellHeight: 50,
   clickable: false,
   clockable: false,
 };
