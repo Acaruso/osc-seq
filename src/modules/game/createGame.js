@@ -13,9 +13,9 @@ function createGame(options = {}) {
       oscClient: new Client('127.0.0.1', 3333),
       canvas: document.getElementById("myCanvas"),
     },
-    logger: logging ? new Logger("log.txt") : {},
-    inputQueue: new MessageQueue(),
     queue: new MessageQueue(),
+    inputQueue: new MessageQueue(),
+    logger: logging ? new Logger("log.txt") : {},
   };
 
   addKeyboardHandlers(game.inputQueue);

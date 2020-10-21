@@ -30,6 +30,10 @@ function createComponentTables(game) {
   game.state.ecManager.createComponentTable("clockable", []);
   game.state.ecManager.createComponentTable("rectToGrid", ["gridId", "row", "col"]);
   game.state.ecManager.createComponentTable(
+    "gridRowToChannel",
+    ["gridId", "row", "channel"]
+  );
+  game.state.ecManager.createComponentTable(
     "clock", 
     ["time"],
     { isSingleton: true }
@@ -55,12 +59,29 @@ function createSingletonComponents(game) {
 function createEntities(game) {
   createSeqGridEntity(
     game.state.ecManager, 
-    { x: 100, y: 100, numCols: 8 }
+    {
+      x: 100,
+      y: 100,
+      numRows: 2,
+      numCols: 8,
+      rowsToChannels: [
+        { row: 0, channel: 0 },
+        { row: 1, channel: 1 },
+      ],
+    }
   );
 
   createSeqGridEntity(
     game.state.ecManager, 
-    { x: 300, y: 300, numCols: 3 }
+    {
+      x: 300,
+      y: 300,
+      numRows: 1,
+      numCols: 3,
+      rowsToChannels: [
+        { row: 0, channel: 2 },
+      ],
+    }
   );
 
   createBallEntity(game.state.ecManager);

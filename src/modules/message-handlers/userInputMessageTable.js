@@ -25,6 +25,7 @@ function createUserInputMessageTable(state) {
       update(state.ecManager, { down: false });
     },
     "Enter:keydown": (message) => {
+      console.log(state.ecManager.entities);
       console.log(state.ecManager.components);
       update(state.ecManager, { enter: true });
     },

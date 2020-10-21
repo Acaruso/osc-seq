@@ -92,15 +92,22 @@ function createComponentTable(tableName, schema, options = {}) {
   return components;
 }
 
+const defaultEntityOptions = {
+  parentId: -1,
+  name: "",
+};
+
 function addEntity(entities, options = {}) {
+  options = { ...defaultEntityOptions, ...options };
+  const { name, parentId } = options;
   const entityId = entities.length;
-  const name = options.name ? options.name : "";
-  const parentId = options.parentId ? options.parentId : -1;
+
   entities.push({
     name,
     entityId,
     parentId,
   });
+  
   return entityId;
 }
 

@@ -1,6 +1,7 @@
 import { createRectEntity } from "./rect";
 
 const defaultOptions = {
+  parentId: -1,
   x: 0,
   y: 0,
   numRows: 2,
@@ -15,20 +16,20 @@ function createGridEntity(ecManager, options = {}) {
   options = { ...defaultOptions, ...options };
   const { numRows, numCols, cellWidth, cellHeight, x, y } = options;
 
-  const rectOptions = { 
-    clickable: options.clickable,
-    gridRect: true,
-    color: "#FF5733",
-    altColor: "#B2B2B2",
-  };
-
-  const gridId = ecManager.addEntity();
+  const gridId = ecManager.addEntity({ parentId: options.parentId });
 
   ecManager.addComponent({ numRows, numCols }, "grid", gridId);
   ecManager.addComponent({ x, y }, "position", gridId);
   if (options.clockable) {
     ecManager.addComponent({}, "clockable", gridId);
   }
+
+  const rectOptions = { 
+    clickable: options.clickable,
+    gridRect: true,
+    color: "#FF5733",
+    altColor: "#B2B2B2",
+  };
 
   for (let row = 0; row < numRows; row++) {
     for (let col = 0; col < numCols; col++) {
