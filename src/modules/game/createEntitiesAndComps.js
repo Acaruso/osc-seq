@@ -13,6 +13,16 @@ function createEntitiesAndComps(game) {
   createComponentTables(game);
   createSingletonComponents(game);
   createEntities(game);
+
+  const res = game.state.ecManager.join3(
+    "rect", 
+    [
+      { table1: "rect", table2: "rectToGrid", col1: "entityId", col2: "entityId" },
+      { table1: "rectToGrid", table2: "grid", col1: "gridId", col2: "entityId" },
+    ]
+  );
+
+  console.log(res);
 }
 
 function createComponentTables(game) {
@@ -29,10 +39,7 @@ function createComponentTables(game) {
   game.state.ecManager.createComponentTable("toggleable", ["isToggled"]);
   game.state.ecManager.createComponentTable("clockable", []);
   game.state.ecManager.createComponentTable("rectToGrid", ["gridId", "row", "col"]);
-  game.state.ecManager.createComponentTable(
-    "gridRowToChannel",
-    ["gridId", "row", "channel"]
-  );
+  game.state.ecManager.createComponentTable("triggerable", ["channel"]);
   game.state.ecManager.createComponentTable(
     "clock", 
     ["time"],
@@ -84,7 +91,20 @@ function createEntities(game) {
     }
   );
 
-  createBallEntity(game.state.ecManager);
+  game.state.ecManager.createEC([
+    { tableName: "ball", radius: 10 },
+    { tableName: "position", x: 0, y: 0 },
+    { tableName: "drawable" },
+    { tableName: "controllable" },
+  ]);
+
+  // createBallEntity(game.state.ecManager);
+
+  // ecManager.addComponent({ radius: 10 }, "ball", newEntityId);
+  // ecManager.addComponent({ x: 0, y: 0 }, "position", newEntityId);
+  // ecManager.addComponent({ }, "drawable", newEntityId);
+  // ecManager.addComponent({ }, "controllable", newEntityId);
+
 
   // createRectEntity(
   //   game.state.ecManager, 

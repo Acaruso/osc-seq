@@ -77,6 +77,72 @@ function createEcManager() {
     return rows;
   }
 
+  // example usage:
+  // join3(
+  //   "rect", 
+  //   [
+  //     { table1: "rect", table2: "rectToGrid", col1: "entityId", col2: "entityId" },
+  //     { table1: "rectToGrid", table2: "grid", col1: "gridId", col2: "entityId" },
+  //   ]
+  // );
+  
+  ecManager.join3 = function(selectName, joins) {
+    const compTables = this.components;
+    const selectTable = compTables[selectName];
+    let rows = [];
+  
+    for (const row of selectTable.data) {
+      let foundAllSiblings = true;
+      let newRow = {};
+      newRow[selectName] = { ...row };
+      for (const join of joins) {
+        const { table1, table2, col1, col2 } = join;
+
+        const table1ColVal = newRow[table1][col1];
+  
+        const siblingRow = getSiblingRow(table1ColVal, table2, col2, compTables);
+
+        if (!siblingRow) {
+          foundAllSiblings = false;
+          break;
+        } else {
+          newRow[table2] = { ...siblingRow };
+        }
+      }
+      if (foundAllSiblings) {
+        rows.push(newRow);
+      }
+    }
+    return rows;
+  };
+
+  function getSiblingRow(table1ColVal, table2, col2, compTables) {
+    const siblingCompTable = compTables[table2];
+
+    if (col2 === "entityId") {
+      if (!siblingCompTable.index.hasOwnProperty(table1ColVal)) {
+        return null;
+      } else {
+        const siblingRowIndex = siblingCompTable.index[table1ColVal];
+        const siblingRow = siblingCompTable.data[siblingRowIndex];
+        return siblingRow;
+      }
+    } else {
+      // TODO: fix this...
+      return null;
+    }
+  }
+
+  ecManager.createEC = function(comps) {
+    const entityId = this.addEntity();
+    
+    for (const comp of comps) {
+      const { tableName } = comp;
+      delete comp.tableName;
+      this.addComponent(comp, tableName, entityId);
+    }
+  }
+
   return ecManager;
 }
 

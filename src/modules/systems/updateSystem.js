@@ -25,7 +25,8 @@ function updateSystem(state) {
 
 function updateClockableGridsSystem(ecManager, clock, timeDivision) {
   // for each clockable grid, get cur and prev tick and compare
-  // if different: get rects for grid, use these + current tick to update rects
+  // if different: get rects for grid, 
+  // use these + current tick to update toggleable for rects
   
   let out = [];
 

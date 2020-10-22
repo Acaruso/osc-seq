@@ -20,10 +20,6 @@ function createSeqGridEntity(ecManager, options = {}) {
   const gridOptions = { ...options, y: options.y + 20, clickable: true };
 
   createGridEntity(ecManager, gridOptions);
-
-  // for (const r2c of options.rowsToChannels) {
-  //   createRowToChannelEntity(ecManager, r2c);
-  // }
 }
 
 export { createSeqGridEntity };
