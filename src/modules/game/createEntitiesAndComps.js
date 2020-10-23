@@ -19,6 +19,17 @@ function createEntitiesAndComps(game) {
   // );
 
   // console.log(res);
+
+  const res = game.state.ecManager.join4(
+    "rect",
+    [
+      ["rect", "entityId", "rectToGrid", "entityId"],
+      ["rectToGrid", "gridId", "grid", "entityId"],
+    ]
+  );
+
+  console.log(res);
+  
 }
 
 function createComponentTables(game) {

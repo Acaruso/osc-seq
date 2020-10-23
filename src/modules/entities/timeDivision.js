@@ -7,7 +7,12 @@ function createTimeDivision(bpm) {
   const n16 = n4 / 4;
   const n2 = n4 * 2;
   const n1 = n4 * 4;
-  return { bpm, n1, n2, n4, n8, n16 };
+
+  const n12 = n4 / 3;
+  const n6 = n12 * 2;
+  const n3 = n6 * 2;
+  
+  return { bpm, n1, n2, n3, n4, n6, n8, n12, n16 };
 }
 
 export { createTimeDivision };

@@ -3,8 +3,11 @@ function updateSystem(state) {
   const clock = state.ecManager.getComponent("clock");
   const timeDivision = state.ecManager.getComponent("timeDivision");
 
+  const stepLen = timeDivision.n4;
+  const maxSeqLen = stepLen * 8; // max seq len is 8 quarter notes
+
   let newClock = { ...clock };
-  newClock.time = (newClock.time + 1) % 4096;
+  newClock.time = (newClock.time + 1) % maxSeqLen;
 
   out.push({
     type: "update component",
@@ -12,18 +15,16 @@ function updateSystem(state) {
     data: newClock,
   });
 
-  const timeDiv = timeDivision.n4;
-
   const clockableGridsMsgs = updateClockableGridsSystem(
     state.ecManager, 
     clock,
-    timeDiv,
+    stepLen,
   );
   out.push(clockableGridsMsgs);
 
   const grids = state.ecManager.join2(["grid"]);
   for (const { grid } of grids) {
-    const [tick, prevTick] = getTicks(clock.time, timeDiv, grid.numCols);
+    const [tick, prevTick] = getTicks(clock.time, stepLen, grid.numCols);
     if (tick !== prevTick) {
       const trigRects = state.ecManager
         .join2(["rectToGrid", "triggerable", "toggleable"])
@@ -45,7 +46,7 @@ function updateSystem(state) {
   return out;
 }
 
-function updateClockableGridsSystem(ecManager, clock, timeDiv) {
+function updateClockableGridsSystem(ecManager, clock, stepLen) {
   // for each clockable grid, get cur and prev tick and compare
   // if different: get rects for grid, 
   // use these + current tick to update toggleable for rects
@@ -55,7 +56,7 @@ function updateClockableGridsSystem(ecManager, clock, timeDiv) {
   const clockableGridRows = ecManager.join2(["grid", "clockable"]);
 
   for (const { grid } of clockableGridRows) {
-    const [tick, prevTick] = getTicks(clock.time, timeDiv, grid.numCols);
+    const [tick, prevTick] = getTicks(clock.time, stepLen, grid.numCols);
 
     if (tick !== prevTick) {
       const rectRows = getRectsForGrid(grid.entityId, ecManager);

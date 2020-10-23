@@ -133,6 +133,84 @@ function createEcManager() {
     }
   }
 
+  // join4(
+  //   "rect", 
+  //   [
+  //     ["rect", "entityId", "rectToGrid", "entityId" ],
+  //     ["rectToGrid", "gridId", "grid", "entityId"],
+  //   ]
+  // );
+
+  ecManager.join4 = function(selectName, joins) {
+    const compTables = this.components;
+    const selectTable = compTables[selectName];
+
+    let set = getFirstSet(selectTable, selectName);
+    
+    for (const join of joins) {
+      set = doJoin(set, join, compTables);
+      console.log("set")
+      console.log(set)
+    }
+  
+    return set;
+  };
+
+  function getFirstSet(table, name) {
+    let out = [];
+    for (const row of table.data) {
+      // const newRow = { ...row };
+      let newRow = {};
+      newRow[name] = { ...row };
+      out.push(newRow);
+    }
+    return out;
+  }
+
+  function doJoin(set, join, compTables) {
+    console.log('--------------------------')
+    const [table1, col1, table2, col2] = join;
+    // for (const row of set) {
+    for (let i = 0; i < set.length; i++) {
+      let row = set[i];
+      const val = row[table1][col1];
+      const table = compTables[table2].data;
+      const res = getJoinRows(val, join, table);
+      const firstRes = res[0];
+      const restRest = res.slice(1);
+      row[table2] = firstRes;
+      console.log('!!!!!!!!!!!!!!!!!!!!!')
+      console.log(join)
+      console.log(row)
+      console.log(val)
+      console.log(table)
+      console.log(res)
+      console.log(set)
+    }
+    return set;
+  }
+
+  function getJoinRows(val, join, table) {
+    // console.log('*******************************')
+    // console.log(val)
+    // console.log(join)
+    // console.log(table)
+    const [table1, col1, table2, col2] = join;
+    let out = [];
+    for (const row of table) {
+      // console.log('###################')
+      // console.log(row)
+      // console.log(col2)
+      // console.log(row[col2])
+      if (row[col2] === val) {
+        // console.log('yep!!')
+        const newRow = { ...row };
+        out.push(newRow);
+      }
+    }
+    return out;
+  }
+
   ecManager.createEC = function(comps) {
     const entityId = this.addEntity();
     for (const [tableName, comp] of Object.entries(comps)) {
