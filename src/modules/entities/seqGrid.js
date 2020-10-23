@@ -1,4 +1,3 @@
-import { createClockGridEntity } from "./clockGrid";
 import { createGridEntity } from "./grid";
 
 const defaultOptions = {
@@ -11,15 +10,43 @@ const defaultOptions = {
 function createSeqGridEntity(ecManager, options = {}) {
   options = { ...defaultOptions, ...options };
 
-  const id = ecManager.addEntity();
+  createGridEntity(
+    ecManager,
+    {
+      grid: { numRows: 1, numCols: options.numCols },
+      position: { x: options.x, y: options.y },
+      clockable: {},
+    },
+    {
+      rect: {
+        w: 50,
+        h: 20,
+        color: "#FF5733",
+        altColor: "#B2B2B2",
+        gridRect: true,
+      },
+      toggleable: {},
+    }
+  );
 
-  const clockGridOptions = { ...options, parentId: id };
-
-  createClockGridEntity(ecManager, clockGridOptions);
-
-  const gridOptions = { ...options, y: options.y + 20, clickable: true };
-
-  createGridEntity(ecManager, gridOptions);
+  createGridEntity(
+    ecManager,
+    {
+      grid: { numRows: options.numRows, numCols: options.numCols },
+      position: { x: options.x, y: options.y + 20 },
+    },
+    {
+      rect: {
+        w: 50,
+        h: 50,
+        color: "#FF5733",
+        altColor: "#B2B2B2",
+        gridRect: true,
+      },
+      clickable: {},
+      toggleable: {},
+    }
+  );
 }
 
 export { createSeqGridEntity };

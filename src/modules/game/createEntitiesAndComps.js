@@ -1,9 +1,5 @@
 import { createEcManager } from "../entityComponent";
 import { createUserInput } from "../entities/userInput";
-import { createBallEntity } from "../entities/ball";
-import { createRectEntity } from "../entities/rect";
-import { createGridEntity } from "../entities/grid";
-import { createClockGridEntity } from "../entities/clockGrid";
 import { createSeqGridEntity } from "../entities/seqGrid";
 import { createTimeDivision } from "../entities/timeDivision";
 
@@ -62,94 +58,14 @@ function createSingletonComponents(game) {
 }
 
 function createEntities(game) {
-  // createSeqGridEntity(
-  //   game.state.ecManager,
-  //   {
-  //     x: 100,
-  //     y: 100,
-  //     numRows: 2,
-  //     numCols: 8,
-  //     rowsToChannels: [
-  //       { row: 0, channel: 0 },
-  //       { row: 1, channel: 1 },
-  //     ],
-  //   }
-  // );
-
-  // createSeqGridEntity(
-  //   game.state.ecManager,
-  //   {
-  //     x: 300,
-  //     y: 300,
-  //     numRows: 1,
-  //     numCols: 3,
-  //     rowsToChannels: [
-  //       { row: 0, channel: 2 },
-  //     ],
-  //   }
-  // );
-
-  // game.state.ecManager.createEC([
-  //   { tableName: "ball", radius: 10 },
-  //   { tableName: "position", x: 0, y: 0 },
-  //   { tableName: "drawable" },
-  //   { tableName: "controllable" },
-  // ]);
-
-  game.state.ecManager.createEC2({
+  game.state.ecManager.createEC({
     ball: { radius: 10 },
     position: { x: 0, y: 0 },
     drawable: {},
     controllable: {},
   });
 
-  const gridOptions = {
-    grid: { numRows: 2, numCols: 3 },
-    position: { x: 300, y: 300 },
-    rect: {
-      w: 50,
-      h: 50,
-      color: "#FF5733",
-      altColor: "#B2B2B2",
-      gridRect: true,
-    },
-  };
-
-  createGridEntity(game.state.ecManager, gridOptions);
-
-  // createBallEntity(game.state.ecManager);
-
-  // ecManager.addComponent({ radius: 10 }, "ball", newEntityId);
-  // ecManager.addComponent({ x: 0, y: 0 }, "position", newEntityId);
-  // ecManager.addComponent({ }, "drawable", newEntityId);
-  // ecManager.addComponent({ }, "controllable", newEntityId);
-
-  // createRectEntity(
-  //   game.state.ecManager,
-  //   { x: 50, y: 50, w: 50, h: 50, color: "#1F5733", altColor: "#B2B2B2" }
-  // );
-
-  // createGridEntity(
-  //   game.state.ecManager,
-  //   {
-  //     numRows: 2,
-  //     numCols: 4,
-  //     cellWidth: 50,
-  //     cellHeight: 50,
-  //     x: 150,
-  //     y: 150,
-  //     clickable: true,
-  //   }
-  // );
-
-  // createClockGridEntity(
-  //   game.state.ecManager,
-  //   {
-  //     numCols: 4,
-  //     x: 40,
-  //     y: 40,
-  //   }
-  // );
+  createSeqGridEntity(game.state.ecManager, { x: 50, y: 50, numRows: 4, numCols: 6 });
 }
 
 export { createEntitiesAndComps };

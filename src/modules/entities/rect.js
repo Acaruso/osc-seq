@@ -1,44 +1,5 @@
 import { isCoordInsideRect } from "../util";
 
-const defaultOptions = {
-  drawable: true, 
-  clickable: true, 
-  toggleable: true,
-  gridRect: false,
-  gridId: -1,
-  row: -1,
-  col: -1,
-};
-
-function createRectEntity(ecManager, options = {}) {
-  options = { ...defaultOptions, ...options };
-  const { 
-    x, y, w, h, color, altColor, drawable, 
-    clickable, toggleable, gridRect, gridId,
-    row, col,
-  } = options;
-
-  const newEntityId = ecManager.addEntity();
-
-  ecManager.addComponent({ w, h, color, altColor, gridRect }, "rect", newEntityId);
-  ecManager.addComponent({ x, y }, "position", newEntityId);
-
-  if (drawable) {
-    ecManager.addComponent({}, "drawable", newEntityId);
-  }
-  if (clickable) {
-    ecManager.addComponent({}, "clickable", newEntityId);
-  }
-  if (toggleable) {
-    ecManager.addComponent({ isToggled: false }, "toggleable", newEntityId);
-  }
-  if (gridRect) {
-    ecManager.addComponent({ gridId, row, col }, "rectToGrid", newEntityId);
-  }
-
-  return newEntityId;
-}
-
 function createUpdateRectMessage(rect, position, toggleable, userInput) {
   const coord = { x: userInput.cx, y: userInput.cy };
 
@@ -90,4 +51,7 @@ function drawOutlinedRect({ rect, position }, canvas) {
   drawFilledRect({ rect: innerRect, position: innerPos }, canvas);
 }
 
-export { createRectEntity, createUpdateRectMessage, drawRect };
+export {
+  createUpdateRectMessage,
+  drawRect,
+};

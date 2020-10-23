@@ -136,18 +136,6 @@ function createEcManager() {
   ecManager.createEC = function(comps) {
     const entityId = this.addEntity();
     
-    for (const comp of comps) {
-      const { tableName } = comp;
-      delete comp.tableName;
-      this.addComponent(comp, tableName, entityId);
-    }
-
-    return entityId;
-  }
-
-  ecManager.createEC2 = function(comps) {
-    const entityId = this.addEntity();
-    
     for (const [tableName, comp] of Object.entries(comps)) {
       this.addComponent(comp, tableName, entityId);
     }

@@ -1,3 +1,13 @@
+function selectOptions(arr, options) {
+  let out = {};
+  for (const s of arr) {
+    if (options.hasOwnProperty(s)) {
+      out[s] = options[s];
+    }
+  }
+  return out;
+}
+
 function detectRectCollision(rect1, rect2) {
   return (
     rect1.x < rect2.x + rect2.w &&
@@ -31,7 +41,8 @@ function log(s = "") {
   console.log(s);
 }
 
-export { 
+export {
+  selectOptions,
   detectRectCollision,
   getSquareFromCircle,
   isCoordInsideRect,
