@@ -12,16 +12,18 @@ function updateSystem(state) {
     data: newClock,
   });
 
+  const timeDiv = timeDivision.n4;
+
   const clockableGridsMsgs = updateClockableGridsSystem(
     state.ecManager, 
-    clock, 
-    timeDivision
+    clock,
+    timeDiv,
   );
   out.push(clockableGridsMsgs);
 
   const grids = state.ecManager.join2(["grid"]);
   for (const { grid } of grids) {
-    const [tick, prevTick] = getTicks(clock.time, timeDivision.n4, grid.numCols);
+    const [tick, prevTick] = getTicks(clock.time, timeDiv, grid.numCols);
     if (tick !== prevTick) {
       const trigRects = state.ecManager
         .join2(["rectToGrid", "triggerable", "toggleable"])
@@ -43,7 +45,7 @@ function updateSystem(state) {
   return out;
 }
 
-function updateClockableGridsSystem(ecManager, clock, timeDivision) {
+function updateClockableGridsSystem(ecManager, clock, timeDiv) {
   // for each clockable grid, get cur and prev tick and compare
   // if different: get rects for grid, 
   // use these + current tick to update toggleable for rects
@@ -53,7 +55,8 @@ function updateClockableGridsSystem(ecManager, clock, timeDivision) {
   const clockableGridRows = ecManager.join2(["grid", "clockable"]);
 
   for (const { grid } of clockableGridRows) {
-    const [tick, prevTick] = getTicks(clock.time, timeDivision.n4, grid.numCols);
+    const [tick, prevTick] = getTicks(clock.time, timeDiv, grid.numCols);
+
     if (tick !== prevTick) {
       const rectRows = getRectsForGrid(grid.entityId, ecManager);
       const rectsMsgs = updateClockableGridRectsSystem(rectRows, tick);
