@@ -141,6 +141,18 @@ function createEcManager() {
       delete comp.tableName;
       this.addComponent(comp, tableName, entityId);
     }
+
+    return entityId;
+  }
+
+  ecManager.createEC2 = function(comps) {
+    const entityId = this.addEntity();
+    
+    for (const [tableName, comp] of Object.entries(comps)) {
+      this.addComponent(comp, tableName, entityId);
+    }
+  
+    return entityId;
   }
 
   return ecManager;
@@ -178,12 +190,13 @@ function addEntity(entities, options = {}) {
 }
 
 function addComponent(comp, compTable, entityId) {
+  const newComp = { ...comp };
   if (compTable.isSingleton) {
-    compTable.data.push(comp);
+    compTable.data.push(newComp);
   } else {
     const newCompIndex = compTable.data.length;
-    comp.entityId = entityId;
-    compTable.data.push(comp);
+    newComp.entityId = entityId;
+    compTable.data.push(newComp);
     compTable.index[entityId] = newCompIndex;
   }
 }

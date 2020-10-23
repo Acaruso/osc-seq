@@ -20,8 +20,8 @@ function createRectEntity(ecManager, options = {}) {
 
   const newEntityId = ecManager.addEntity();
 
-  ecManager.addComponent({ x, y }, "position", newEntityId);
   ecManager.addComponent({ w, h, color, altColor, gridRect }, "rect", newEntityId);
+  ecManager.addComponent({ x, y }, "position", newEntityId);
 
   if (drawable) {
     ecManager.addComponent({}, "drawable", newEntityId);
