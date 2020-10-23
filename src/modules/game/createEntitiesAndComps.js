@@ -65,7 +65,14 @@ function createEntities(game) {
     controllable: {},
   });
 
-  createSeqGridEntity(game.state.ecManager, { x: 50, y: 50, numRows: 4, numCols: 6 });
+  createSeqGridEntity(
+    game.state.ecManager, 
+    { 
+      position: { x: 50, y: 50 },
+      grid: { numRows: 2, numCols: 4 },
+      rowToChannel: { "0": 9, "1": 1},
+    }
+  );
 }
 
 export { createEntitiesAndComps };
