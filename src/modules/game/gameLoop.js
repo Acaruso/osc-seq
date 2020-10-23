@@ -17,8 +17,6 @@ function gameLoop(game) {
   
   game.queue.push([
     { type: "clear screen" },
-    { type: "osc trigger 1" },
-    { type: "osc trigger 2" },
     controlSystem(game.state),
     updateSystem(game.state),
     drawSystem(game.state),

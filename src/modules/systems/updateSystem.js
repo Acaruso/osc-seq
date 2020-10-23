@@ -17,8 +17,28 @@ function updateSystem(state) {
     clock, 
     timeDivision
   );
-
   out.push(clockableGridsMsgs);
+
+  const grids = state.ecManager.join2(["grid"]);
+  for (const { grid } of grids) {
+    const [tick, prevTick] = getTicks(clock.time, timeDivision.n4, grid.numCols);
+    if (tick !== prevTick) {
+      const trigRects = state.ecManager
+        .join2(["rectToGrid", "triggerable", "toggleable"])
+        .filter(({ rectToGrid }) => rectToGrid.gridId === grid.entityId);
+    
+      for (const { rectToGrid, triggerable, toggleable } of trigRects) {
+        const col = rectToGrid.col;
+        if (tick === col && toggleable.isToggled) {
+          const channel = triggerable.channel;
+          out.push({
+            type: "send osc",
+            data: { channel }
+          });
+        }
+      }
+    }
+  }
   
   return out;
 }

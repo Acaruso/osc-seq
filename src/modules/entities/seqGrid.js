@@ -62,7 +62,7 @@ function getClockRectOptions() {
       altColor: "#B2B2B2",
       gridRect: true,
     },
-    toggleable: {},
+    toggleable: { isToggled: false },
   };
 }
 
@@ -83,7 +83,7 @@ function getRectOptions() {
       gridRect: true,
     },
     clickable: {},
-    toggleable: {},
+    toggleable: { isToggled: false },
   };
 }
 

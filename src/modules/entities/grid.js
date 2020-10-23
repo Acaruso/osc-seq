@@ -23,7 +23,7 @@ function createGridEntity(ecManager, gridOptions = {}, rectOptions = {}) {
         },
         rectToGrid: { gridId, row, col },
         drawable: {},
-        toggleable: {},
+        toggleable: { isToggled: false },
       };
 
       const rectId = ecManager.createEC(newRectOpts);

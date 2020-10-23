@@ -70,7 +70,7 @@ function createEntities(game) {
     { 
       position: { x: 50, y: 50 },
       grid: { numRows: 2, numCols: 4 },
-      rowToChannel: { "0": 9, "1": 1},
+      rowToChannel: { "0": 0, "1": 1},
     }
   );
 }
