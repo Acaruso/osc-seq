@@ -1,89 +1,52 @@
-import { getComponent, updateComponent } from "./../entityComponent";
-import { log } from "./../util";
-
 function createUserInputMessageTable(state) {
   return {
     "ArrowRight:keydown": (message) => {
-      let newUserInput = { 
-        ...getComponent(state.components.userInput),
-        right: true
-      };
-      updateComponent(state.components.userInput, newUserInput);
+      update(state.ecManager, { right: true });
     },
     "ArrowRight:keyup": (message) => {
-      let newUserInput = {
-        ...getComponent(state.components.userInput),
-        right: false
-      };
-      updateComponent(state.components.userInput, newUserInput);
+      update(state.ecManager, { right: false });
     },
     "ArrowLeft:keydown": (message) => {
-      let newUserInput = { 
-        ...getComponent(state.components.userInput),
-        left: true
-      };
-      updateComponent(state.components.userInput, newUserInput);
+      update(state.ecManager, { left: true });
     },
     "ArrowLeft:keyup": (message) => {
-      let newUserInput = { 
-        ...getComponent(state.components.userInput),
-        left: false
-      };
-      updateComponent(state.components.userInput, newUserInput);
+      update(state.ecManager, { left: false });
     },
     "ArrowUp:keydown": (message) => {
-      let newUserInput = { 
-        ...getComponent(state.components.userInput),
-        up: true
-      };
-      updateComponent(state.components.userInput, newUserInput);
+      update(state.ecManager, { up: true });
     },
     "ArrowUp:keyup": (message) => {
-      let newUserInput = { 
-        ...getComponent(state.components.userInput),
-        up: false
-      };
-      updateComponent(state.components.userInput, newUserInput);
+      update(state.ecManager, { up: false });
     },
     "ArrowDown:keydown": (message) => {
-      let newUserInput = { 
-        ...getComponent(state.components.userInput),
-        down: true
-      };
-      updateComponent(state.components.userInput, newUserInput);
+      update(state.ecManager, { down: true });
     },
     "ArrowDown:keyup": (message) => {
-      let newUserInput = { 
-        ...getComponent(state.components.userInput),
-        down: false
-      };
-      updateComponent(state.components.userInput, newUserInput);
+      update(state.ecManager, { down: false });
     },
     "Enter:keydown": (message) => {
-      console.log(state);
-      let newUserInput = { 
-        ...getComponent(state.components.userInput),
-        enter: true
-      };
-      updateComponent(state.components.userInput, newUserInput);
+      console.log(state.ecManager.entities);
+      console.log(state.ecManager.components);
+      update(state.ecManager, { enter: true });
     },
     "Enter:keyup": (message) => {
-      let newUserInput = { 
-        ...getComponent(state.components.userInput),
-        enter: false
-      };
-      updateComponent(state.components.userInput, newUserInput);
+      update(state.ecManager, { enter: false });
     },
     "mouse click": (message) => {
-      let newUserInput = { 
-        ...getComponent(state.components.userInput),
-        click: true,
-        cx: message.data.cx,
-        cy: message.data.cy,
-      };
-      updateComponent(state.components.userInput, newUserInput);
+      update(
+        state.ecManager, 
+        { click: true, cx: message.data.cx, cy: message.data.cy },
+      );
     },
   };
+}
+
+function update(ecManager, newState) {
+  let newUserInput = { 
+    ...ecManager.getComponent("userInput"),
+    ...newState,
+  };  
+  ecManager.updateComponent(newUserInput, "userInput");
 }
 
 export { createUserInputMessageTable };

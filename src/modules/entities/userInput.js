@@ -20,11 +20,11 @@ function addKeyboardHandlers(queue) {
   document.addEventListener("keyup", keyHandler, false);
 }
 
-function addMouseHandler(state, queue) {
+function addMouseHandlers(queue, canvas) {
   document.addEventListener(
     "mousedown", 
     (event) => {
-      const coord = getMouseCoord(event, state.canvas);
+      const coord = getMouseCoord(event, canvas);
       queue.push({ type: "mouse click", data: coord })
     },
     false
@@ -38,4 +38,4 @@ function getMouseCoord(event, canvas) {
   };
 }
 
-export { createUserInput, addKeyboardHandlers, addMouseHandler };
+export { createUserInput, addKeyboardHandlers, addMouseHandlers };

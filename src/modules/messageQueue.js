@@ -5,7 +5,7 @@ class MessageQueue {
 
   push(newMessage) {
     if (Array.isArray(newMessage)) {
-      this.messages = this.messages.concat(newMessage.flat());
+      this.messages = this.messages.concat(newMessage.flat(4));
     } else {
       this.messages.push(newMessage);    
     }
