@@ -1,50 +1,81 @@
-import { log } from "./util";
-
 function createEcManager() {
   let ecManager = {};
 
   ecManager.entities = [];
   ecManager.components = {};
 
+  const defaultCompTableOptions = {
+    colsToIndex: [],
+    isSingleton: false,
+  };
+
   ecManager.createComponentTable = function(tableName, schema, options = {}) {
-    this.components[tableName] = createComponentTable(tableName, schema, options);
+    options = { ...defaultCompTableOptions, ...options };
+    options.colsToIndex.push("entityId"); // always index entityId
+    let index = {};
+    for (const colToIndex of options.colsToIndex) {
+      index[colToIndex] = {};
+    }
+    this.components[tableName] = {
+      index,
+      data: [],
+      tableName,
+      schema,
+      isSingleton: options.isSingleton,
+    };
+  };
+
+  const defaultEntityOptions = {
+    parentId: -1,
+    name: "",
   };
 
   ecManager.addEntity = function(options = {}) {
-    return addEntity(this.entities, options);
+    options = { ...defaultEntityOptions, ...options };
+    const { name, parentId } = options;
+    const entityId = this.entities.length;
+
+    this.entities.push({
+      name,
+      entityId,
+      parentId,
+    });
+
+    return entityId;
   };
 
   ecManager.addComponent = function(comp, tableName, entityId) {
     const compTable = this.components[tableName];
-    addComponent(comp, compTable, entityId);
+    const newComp = { ...comp };
+    if (compTable.isSingleton) {
+      if (compTable.data.length === 0) {
+        compTable.data.push(newComp);
+      }
+    } else {
+      newComp.entityId = entityId;
+      insertComp(newComp, compTable);
+    }
   };
 
   ecManager.updateComponent = function(comp, tableName) {
     const compTable = this.components[tableName];
-    updateComponent(compTable, comp);
+    if (compTable.isSingleton) {
+      if (compTable.data.length === 1) {
+        compTable.data[0] = comp;
+      }
+    } else {
+      updateCompAtIndex(comp, "entityId", compTable);
+    }
   };
 
   ecManager.getComponent = function(tableName, entityId) {
     const compTable = this.components[tableName];
-    return getComponent(compTable, entityId);
-  };
-
-  ecManager.join = function(compNames) {
-    return join(compNames, this.components);
-  };
-
-  ecManager.project = function(data, tableName) {
-    const compTable = this.components[tableName];
-    const schema = compTable.schema;
-
-    let out = { entityId: data.entityId };
-
-    for (const colName of schema) {
-      out[colName] = data[colName];
+    if (compTable.isSingleton) {
+      return compTable.data.length === 1 ? compTable.data[0] : null;
+    } else {
+      return getCompAtIndex(entityId, "entityId", compTable);
     }
-
-    return out;
-  }
+  };
 
   ecManager.join2 = function(compNames) {
     const compTables = this.components;
@@ -52,7 +83,7 @@ function createEcManager() {
     const siblingCompNames = compNames.slice(1);
     const primaryCompTable = compTables[primaryCompName];
     let rows = [];
-  
+
     for (const row of primaryCompTable.data) {
       let foundAllSiblings = true;
       let newRow = {};
@@ -60,12 +91,11 @@ function createEcManager() {
       const entityId = row.entityId;
       for (const siblingCompName of siblingCompNames) {
         const siblingCompTable = compTables[siblingCompName];
-        if (!siblingCompTable.index.hasOwnProperty(entityId)) {
+        if (!compExistsAtIndex(entityId, "entityId", siblingCompTable)) {
           foundAllSiblings = false;
           break;
         } else {
-          const siblingRowIndex = siblingCompTable.index[entityId];
-          const siblingRow = siblingCompTable.data[siblingRowIndex];
+          const siblingRow = getCompAtIndex(entityId, "entityId", siblingCompTable);
           newRow[siblingCompName] = { ...siblingRow };
         }
       }
@@ -73,93 +103,26 @@ function createEcManager() {
         rows.push(newRow);
       }
     }
-  
+
     return rows;
   }
-
-  // example usage:
-  // join3(
-  //   "rect", 
-  //   [
-  //     { table1: "rect", table2: "rectToGrid", col1: "entityId", col2: "entityId" },
-  //     { table1: "rectToGrid", table2: "grid", col1: "gridId", col2: "entityId" },
-  //   ]
-  // );
-  
-  ecManager.join3 = function(selectName, joins) {
-    const compTables = this.components;
-    const selectTable = compTables[selectName];
-    let rows = [];
-  
-    for (const row of selectTable.data) {
-      let foundAllSiblings = true;
-      let newRow = {};
-      newRow[selectName] = { ...row };
-      for (const join of joins) {
-        const { table1, table2, col1, col2 } = join;
-
-        const table1ColVal = newRow[table1][col1];
-  
-        const siblingRow = getSiblingRow(table1ColVal, table2, col2, compTables);
-
-        if (!siblingRow) {
-          foundAllSiblings = false;
-          break;
-        } else {
-          newRow[table2] = { ...siblingRow };
-        }
-      }
-      if (foundAllSiblings) {
-        rows.push(newRow);
-      }
-    }
-    return rows;
-  };
-
-  function getSiblingRow(table1ColVal, table2, col2, compTables) {
-    const siblingCompTable = compTables[table2];
-
-    if (col2 === "entityId") {
-      if (!siblingCompTable.index.hasOwnProperty(table1ColVal)) {
-        return null;
-      } else {
-        const siblingRowIndex = siblingCompTable.index[table1ColVal];
-        const siblingRow = siblingCompTable.data[siblingRowIndex];
-        return siblingRow;
-      }
-    } else {
-      // TODO: fix this...
-      return null;
-    }
-  }
-
-  // join4(
-  //   "rect", 
-  //   [
-  //     ["rect", "entityId", "rectToGrid", "entityId" ],
-  //     ["rectToGrid", "gridId", "grid", "entityId"],
-  //   ]
-  // );
 
   ecManager.join4 = function(selectName, joins) {
     const compTables = this.components;
     const selectTable = compTables[selectName];
 
     let set = getFirstSet(selectTable, selectName);
-    
+
     for (const join of joins) {
       set = doJoin(set, join, compTables);
-      console.log("set")
-      console.log(set)
     }
-  
+
     return set;
   };
 
   function getFirstSet(table, name) {
     let out = [];
     for (const row of table.data) {
-      // const newRow = { ...row };
       let newRow = {};
       newRow[name] = { ...row };
       out.push(newRow);
@@ -167,48 +130,64 @@ function createEcManager() {
     return out;
   }
 
+  // create new set
+  // for each row in old set, try to join stuff to it + add to new set
+  // if cant find match, leave out row
+  // if multiple matches, create new rows
   function doJoin(set, join, compTables) {
-    console.log('--------------------------')
     const [table1, col1, table2, col2] = join;
-    // for (const row of set) {
-    for (let i = 0; i < set.length; i++) {
-      let row = set[i];
-      const val = row[table1][col1];
-      const table = compTables[table2].data;
+    let newSet = [];
+    for (const row of set) {
+      let newRow = copyObject(row);
+      const val = newRow[table1][col1];
+      const table = compTables[table2];
       const res = getJoinRows(val, join, table);
+      if (res.length === 0) {
+        continue;
+      }
       const firstRes = res[0];
-      const restRest = res.slice(1);
-      row[table2] = firstRes;
-      console.log('!!!!!!!!!!!!!!!!!!!!!')
-      console.log(join)
-      console.log(row)
-      console.log(val)
-      console.log(table)
-      console.log(res)
-      console.log(set)
+      const restRes = res.slice(1);
+      newRow[table2] = firstRes;
+      newSet.push(newRow);
+      for (const x of restRes) {
+        let newNewRow = copyObject(row);
+        newNewRow[table2] = x;
+        newSet.push(newNewRow);
+      }
     }
-    return set;
+    return newSet;
   }
 
+  // get all rows from table where row[col2] === val
   function getJoinRows(val, join, table) {
-    // console.log('*******************************')
-    // console.log(val)
-    // console.log(join)
-    // console.log(table)
     const [table1, col1, table2, col2] = join;
     let out = [];
-    for (const row of table) {
-      // console.log('###################')
-      // console.log(row)
-      // console.log(col2)
-      // console.log(row[col2])
-      if (row[col2] === val) {
-        // console.log('yep!!')
+
+    if (table.index[col2].hasOwnProperty(val)) {
+      const idxs = table.index[col2][val];
+      for (const idx of idxs) {
+        const row = table.data[idx];
         const newRow = { ...row };
         out.push(newRow);
       }
     }
+
+    // for (const row of table.data) {
+    //   if (row[col2] === val) {
+    //     const newRow = { ...row };
+    //     out.push(newRow);
+    //   }
+    // }
+
     return out;
+  }
+
+  function copyObject(obj) {
+    let newObj = {};
+    for (const [key, val] of Object.entries(obj)) {
+      newObj[key] = { ...val };
+    }
+    return newObj;
   }
 
   ecManager.createEC = function(comps) {
@@ -225,106 +204,62 @@ function createEcManager() {
     }
   }
 
+  function insertComp(newComp, compTable) {
+    const newCompRowIndex = compTable.data.length;
+    compTable.data.push(newComp);
+
+    for (const [colName, indexMap] of Object.entries(compTable.index)) {
+      const colVal = newComp[colName];
+      if (!indexMap.hasOwnProperty(colVal)) {
+        indexMap[colVal] = [newCompRowIndex];
+      } else {
+        indexMap[colVal].push(newCompRowIndex)
+      }
+    }
+
+    // const entityId = newComp.entityId;
+    // compTable.index[entityId] = newCompRowIndex;
+  }
+
+  function getCompAtIndex(indexVal, indexName, compTable) {
+    const idxs = compTable.index[indexName][indexVal];
+    const idx = idxs[0];
+    return compTable.data[idx];
+    // const rowIndex = compTable.index[indexVal];
+    // return compTable.data[rowIndex];
+  }
+
+  function getCompsAtIndex(indexVal, indexName, compTable) {
+    const idxs = compTable.index[indexName][indexVal];
+    let out = [];
+    for (const idx of idxs) {
+      out.push(compTable.data[idx]);
+    }
+    return out;
+  }
+
+  function updateCompAtIndex(comp, indexName, compTable) {
+    const indexVal = comp[indexName];
+    const idxs = compTable.index[indexName][indexVal];
+    const idx = idxs[0];
+    compTable.data[idx] = comp;
+
+    // const indexVal = comp[indexName];
+    // const rowIndex = compTable.index[indexVal];
+    // compTable.data[rowIndex] = comp;
+  }
+
+  function compExistsAtIndex(indexVal, indexName, compTable) {
+    // return compTable.index.hasOwnProperty(indexVal);
+    if (!compTable.index[indexName].hasOwnProperty(indexVal)) {
+      return false;
+    } else {
+      const indexArr = compTable.index[indexName][indexVal];
+      return (indexArr.length > 0);
+    }
+  }
+
   return ecManager;
 }
 
-function createComponentTable(tableName, schema, options = {}) {
-  const isSingleton = options.isSingleton ? options.isSingleton : false;
-  let components = {
-    index: {},
-    data: [],
-    tableName,
-    schema,
-    isSingleton,
-  };
-  return components;
-}
-
-const defaultEntityOptions = {
-  parentId: -1,
-  name: "",
-};
-
-function addEntity(entities, options = {}) {
-  options = { ...defaultEntityOptions, ...options };
-  const { name, parentId } = options;
-  const entityId = entities.length;
-
-  entities.push({
-    name,
-    entityId,
-    parentId,
-  });
-  
-  return entityId;
-}
-
-function addComponent(comp, compTable, entityId) {
-  const newComp = { ...comp };
-  if (compTable.isSingleton) {
-    compTable.data.push(newComp);
-  } else {
-    const newCompIndex = compTable.data.length;
-    newComp.entityId = entityId;
-    compTable.data.push(newComp);
-    compTable.index[entityId] = newCompIndex;
-  }
-}
-
-function updateComponent(compTable, comp) {
-  if (compTable.isSingleton) {
-    compTable.data[0] = comp;
-  } else {
-    const compIndex = compTable.index[comp.entityId];
-    compTable.data[compIndex] = comp;
-  }
-}
-
-function getComponent(compTable, entityId) {
-  if (compTable.isSingleton) {
-    return compTable.data[0];
-  } else {
-    const compIndex = compTable.index[entityId];
-    return compTable.data[compIndex];
-  }
-}
-
-function join(compNames, compTables) {
-  const primaryCompName = compNames[0];
-  const siblingCompNames = compNames.slice(1);
-  const primaryCompTable = compTables[primaryCompName];
-  let rows = [];
-
-  for (const row of primaryCompTable.data) {
-    let newRow = { ...row };
-    const entityId = row.entityId;
-    for (const siblingCompName of siblingCompNames) {
-      const siblingCompTable = compTables[siblingCompName];
-      if (siblingCompTable.index.hasOwnProperty(entityId)) {
-        const siblingRowIndex = siblingCompTable.index[entityId];
-        const siblingRow = siblingCompTable.data[siblingRowIndex];
-        newRow = addCols(newRow, siblingRow);
-      }
-    }
-    rows.push(newRow);
-  }
-
-  return rows;
-}
-
-function addCols(row, newRow) {
-  for (const key in newRow) {
-    row[key] = newRow[key];
-  }
-  return row;
-}
-
-export {
-  createEcManager,
-  createComponentTable,
-  addEntity,
-  addComponent,
-  updateComponent,
-  getComponent,
-  join,
-};
+export { createEcManager };

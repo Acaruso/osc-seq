@@ -15,58 +15,122 @@ function updateSystem(state) {
     data: newClock,
   });
 
+  // update clock grids
   const clockableGridsMsgs = updateClockableGridsSystem(
-    state.ecManager, 
+    state.ecManager,
     clock,
     stepLen,
   );
   out.push(clockableGridsMsgs);
 
-  const grids = state.ecManager.join2(["grid"]);
-  for (const { grid } of grids) {
+
+  // send osc messages
+
+  const rectRows = state.ecManager.join4(
+    "rect",
+    [
+      ["rect", "entityId", "triggerable", "entityId"],
+      ["rect", "entityId", "toggleable", "entityId"],
+      ["rect", "entityId", "rectToGrid", "entityId"],
+      ["rectToGrid", "gridId", "grid", "entityId"],
+    ]
+  );
+
+  for (const { grid, rectToGrid, triggerable, toggleable } of rectRows) {
     const [tick, prevTick] = getTicks(clock.time, stepLen, grid.numCols);
     if (tick !== prevTick) {
-      const trigRects = state.ecManager
-        .join2(["rectToGrid", "triggerable", "toggleable"])
-        .filter(({ rectToGrid }) => rectToGrid.gridId === grid.entityId);
-    
-      for (const { rectToGrid, triggerable, toggleable } of trigRects) {
-        const col = rectToGrid.col;
-        if (tick === col && toggleable.isToggled) {
-          const channel = triggerable.channel;
-          out.push({
-            type: "send osc",
-            data: { channel }
-          });
-        }
+      if (tick === rectToGrid.col && toggleable.isToggled) {
+        out.push({
+          type: "send osc",
+          data: { channel: triggerable.channel }
+        });
       }
     }
   }
-  
+
+  // const grids = state.ecManager.join2(["grid"]);
+  // for (const { grid } of grids) {
+  //   const [tick, prevTick] = getTicks(clock.time, stepLen, grid.numCols);
+  //   if (tick !== prevTick) {
+  //     const trigRects = state.ecManager
+  //       .join2(["rectToGrid", "triggerable", "toggleable"])
+  //       .filter(({ rectToGrid }) => rectToGrid.gridId === grid.entityId);
+
+  //     for (const { rectToGrid, triggerable, toggleable } of trigRects) {
+  //       const col = rectToGrid.col;
+  //       if (tick === col && toggleable.isToggled) {
+  //         const channel = triggerable.channel;
+  //         out.push({
+  //           type: "send osc",
+  //           data: { channel }
+  //         });
+  //       }
+  //     }
+  //   }
+  // }
+
   return out;
 }
 
 function updateClockableGridsSystem(ecManager, clock, stepLen) {
   // for each clockable grid, get cur and prev tick and compare
-  // if different: get rects for grid, 
+  // if different: get rects for grid,
   // use these + current tick to update toggleable for rects
-  
+
   let out = [];
 
+  // new stuff:
+  const res = ecManager.join4(
+    "rect",
+    [
+      ["rect", "entityId", "drawable", "entityId"],
+      ["rect", "entityId", "toggleable", "entityId"],
+      ["rect", "entityId", "rectToGrid", "entityId"],
+      ["rectToGrid", "gridId", "grid", "entityId"],
+      ["grid", "entityId", "clockable", "entityId"]
+    ]
+  );
+
+  // old stuff:
   const clockableGridRows = ecManager.join2(["grid", "clockable"]);
 
   for (const { grid } of clockableGridRows) {
     const [tick, prevTick] = getTicks(clock.time, stepLen, grid.numCols);
 
     if (tick !== prevTick) {
+      // ecManager
+      // .join2(["rect", "drawable", "toggleable", "rectToGrid"])
+      // .filter(({ rectToGrid }) => rectToGrid.gridId === gridId);
       const rectRows = getRectsForGrid(grid.entityId, ecManager);
       const rectsMsgs = updateClockableGridRectsSystem(rectRows, tick);
       out.push(rectsMsgs);
     }
   }
-  
+
   return out;
 }
+
+// function updateClockableGridsSystem(ecManager, clock, stepLen) {
+//   // for each clockable grid, get cur and prev tick and compare
+//   // if different: get rects for grid,
+//   // use these + current tick to update toggleable for rects
+
+//   let out = [];
+
+//   const clockableGridRows = ecManager.join2(["grid", "clockable"]);
+
+//   for (const { grid } of clockableGridRows) {
+//     const [tick, prevTick] = getTicks(clock.time, stepLen, grid.numCols);
+
+//     if (tick !== prevTick) {
+//       const rectRows = getRectsForGrid(grid.entityId, ecManager);
+//       const rectsMsgs = updateClockableGridRectsSystem(rectRows, tick);
+//       out.push(rectsMsgs);
+//     }
+//   }
+
+//   return out;
+// }
 
 function updateClockableGridRectsSystem(rows, tick) {
   let out = [];

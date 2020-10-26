@@ -12,9 +12,9 @@ function drawSystem(state) {
 
 function drawBallsSystem(state) {
   let out = [];
-    
+
   let rows = state.ecManager.join2(["ball", "position", "drawable"]);
-  
+
   for (const { ball, position } of rows) {
     out.push({ type: "draw ball", data: { ball, position } });
   }
@@ -24,7 +24,7 @@ function drawBallsSystem(state) {
 
 function drawRectsSystem(state) {
   let out = [];
-  
+
   let rows = state.ecManager.join2(["rect", "position", "drawable", "toggleable"]);
 
   for (const { rect, position, toggleable } of rows) {

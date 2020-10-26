@@ -20,23 +20,30 @@ function createEntitiesAndComps(game) {
 
   // console.log(res);
 
+  // const res = game.state.ecManager.join4(
+  //   "rect",
+  //   [
+  //     ["rect", "entityId", "rectToGrid", "entityId"],
+  //     ["rectToGrid", "gridId", "grid", "entityId"],
+  //   ]
+  // );
+
   const res = game.state.ecManager.join4(
-    "rect",
+    "grid",
     [
-      ["rect", "entityId", "rectToGrid", "entityId"],
-      ["rectToGrid", "gridId", "grid", "entityId"],
+      ["grid", "entityId", "rectToGrid", "gridId"],
+      ["rectToGrid", "entityId", "rect", "entityId"],
     ]
   );
 
   console.log(res);
-  
 }
 
 function createComponentTables(game) {
   game.state.ecManager.createComponentTable("position", ["x", "y"]);
   game.state.ecManager.createComponentTable("ball", ["radius"]);
   game.state.ecManager.createComponentTable(
-    "rect", 
+    "rect",
     ["w", "h", "color", "altColor", "gridRect"]
   );
   game.state.ecManager.createComponentTable("grid", ["numRows", "numCols"]);
@@ -45,7 +52,11 @@ function createComponentTables(game) {
   game.state.ecManager.createComponentTable("clickable", []);
   game.state.ecManager.createComponentTable("toggleable", ["isToggled"]);
   game.state.ecManager.createComponentTable("clockable", []);
-  game.state.ecManager.createComponentTable("rectToGrid", ["gridId", "row", "col"]);
+  game.state.ecManager.createComponentTable(
+    "rectToGrid",
+    ["gridId", "row", "col"],
+    { colsToIndex: ["gridId"] },
+  );
   game.state.ecManager.createComponentTable("triggerable", ["channel"]);
   game.state.ecManager.createComponentTable("clock", ["time"], {
     isSingleton: true,
@@ -77,13 +88,31 @@ function createEntities(game) {
   });
 
   createSeqGridEntity(
-    game.state.ecManager, 
-    { 
+    game.state.ecManager,
+    {
       position: { x: 50, y: 50 },
       grid: { numRows: 2, numCols: 4 },
       rowToChannel: { "0": 0, "1": 1},
     }
   );
+
+  game.state.ecManager.createEC({
+    rect: { w: 50, h: 50, color: "#FF5733", altColor: "#B2B2B2", gridRect: true} ,
+    position: { x: 200, y: 200 },
+    drawable: {},
+    clickable: {},
+    toggleable: { isToggled: false },
+  });
+
+
+  // eid 2 currently mapped to gridId 1
+  // want to also map to gid 6
+
+  // game.state.ecManager.addComponent(
+  //   { gridId: 6, row: 1, col: 1 },
+  //   "rectToGrid",
+  //   2
+  // );
 }
 
 export { createEntitiesAndComps };
