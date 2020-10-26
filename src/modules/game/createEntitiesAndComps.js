@@ -9,34 +9,6 @@ function createEntitiesAndComps(game) {
   createComponentTables(game);
   createSingletonComponents(game);
   createEntities(game);
-
-  // const res = game.state.ecManager.join3(
-  //   "rect",
-  //   [
-  //     { table1: "rect", table2: "rectToGrid", col1: "entityId", col2: "entityId" },
-  //     { table1: "rectToGrid", table2: "grid", col1: "gridId", col2: "entityId" },
-  //   ]
-  // );
-
-  // console.log(res);
-
-  // const res = game.state.ecManager.join4(
-  //   "rect",
-  //   [
-  //     ["rect", "entityId", "rectToGrid", "entityId"],
-  //     ["rectToGrid", "gridId", "grid", "entityId"],
-  //   ]
-  // );
-
-  const res = game.state.ecManager.join4(
-    "grid",
-    [
-      ["grid", "entityId", "rectToGrid", "gridId"],
-      ["rectToGrid", "entityId", "rect", "entityId"],
-    ]
-  );
-
-  console.log(res);
 }
 
 function createComponentTables(game) {
@@ -103,16 +75,6 @@ function createEntities(game) {
     clickable: {},
     toggleable: { isToggled: false },
   });
-
-
-  // eid 2 currently mapped to gridId 1
-  // want to also map to gid 6
-
-  // game.state.ecManager.addComponent(
-  //   { gridId: 6, row: 1, col: 1 },
-  //   "rectToGrid",
-  //   2
-  // );
 }
 
 export { createEntitiesAndComps };

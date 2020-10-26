@@ -114,7 +114,8 @@ function createEcManager() {
     let set = getFirstSet(selectTable, selectName);
 
     for (const join of joins) {
-      set = doJoin(set, join, compTables);
+      // join = getJoinVals(join);
+      set = doJoin(set, getJoinVals(join), compTables);
     }
 
     return set;
@@ -172,13 +173,6 @@ function createEcManager() {
       }
     }
 
-    // for (const row of table.data) {
-    //   if (row[col2] === val) {
-    //     const newRow = { ...row };
-    //     out.push(newRow);
-    //   }
-    // }
-
     return out;
   }
 
@@ -188,6 +182,15 @@ function createEcManager() {
       newObj[key] = { ...val };
     }
     return newObj;
+  }
+
+  function getJoinVals(join) {
+    if (join.length === 2) {
+      const [table1, table2] = join;
+      return [table1, "entityId", table2, "entityId"];
+    } else {
+      return join;
+    }
   }
 
   ecManager.createEC = function(comps) {
@@ -216,17 +219,12 @@ function createEcManager() {
         indexMap[colVal].push(newCompRowIndex)
       }
     }
-
-    // const entityId = newComp.entityId;
-    // compTable.index[entityId] = newCompRowIndex;
   }
 
   function getCompAtIndex(indexVal, indexName, compTable) {
     const idxs = compTable.index[indexName][indexVal];
     const idx = idxs[0];
     return compTable.data[idx];
-    // const rowIndex = compTable.index[indexVal];
-    // return compTable.data[rowIndex];
   }
 
   function getCompsAtIndex(indexVal, indexName, compTable) {
@@ -243,14 +241,9 @@ function createEcManager() {
     const idxs = compTable.index[indexName][indexVal];
     const idx = idxs[0];
     compTable.data[idx] = comp;
-
-    // const indexVal = comp[indexName];
-    // const rowIndex = compTable.index[indexVal];
-    // compTable.data[rowIndex] = comp;
   }
 
   function compExistsAtIndex(indexVal, indexName, compTable) {
-    // return compTable.index.hasOwnProperty(indexVal);
     if (!compTable.index[indexName].hasOwnProperty(indexVal)) {
       return false;
     } else {
