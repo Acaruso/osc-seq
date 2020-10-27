@@ -8,6 +8,12 @@ function selectOptions(arr, options) {
   return out;
 }
 
+function createImage(path) {
+  const img = new Image();
+  img.src = path;
+  return img;
+}
+
 function detectRectCollision(rect1, rect2) {
   return (
     rect1.x < rect2.x + rect2.w &&
@@ -37,14 +43,10 @@ function isCoordInsideRect(coord, rect, position) {
   return res;
 }
 
-function log(s = "") {
-  console.log(s);
-}
-
 export {
   selectOptions,
+  createImage,
   detectRectCollision,
   getSquareFromCircle,
   isCoordInsideRect,
-  log,
 };

@@ -1,5 +1,6 @@
 import { drawBall } from "../entities/ball";
-import { drawRect } from "./../entities/rect";
+import { drawRect } from "../entities/rect";
+import { drawImage } from "../entities/image";
 
 function createDrawMessageTable(state) {
   return {
@@ -12,6 +13,11 @@ function createDrawMessageTable(state) {
     },
     "draw rect": (message) => {
       drawRect(message.data, state.canvas);
+    },
+    "draw image": (message) => {
+      const name = message.data.image.name;
+      const imageElt = state.images[name];
+      drawImage(message.data, imageElt, state.canvas);
     },
   };
 }

@@ -114,7 +114,6 @@ function createEcManager() {
     let set = getFirstSet(selectTable, selectName);
 
     for (const join of joins) {
-      // join = getJoinVals(join);
       set = doJoin(set, getJoinVals(join), compTables);
     }
 

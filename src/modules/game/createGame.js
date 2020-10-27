@@ -4,6 +4,7 @@ import { MessageQueue } from "../messageQueue";
 import { Logger } from "../logger";
 import { createRootMessageTable } from "../message-handlers/rootMessageTable";
 import { createEntitiesAndComps } from "./createEntitiesAndComps";
+import { createImage } from "./../util";
 
 function createGame(options = {}) {
   let { logging } = options;
@@ -12,6 +13,10 @@ function createGame(options = {}) {
     state: {
       oscClient: new Client('127.0.0.1', 3333),
       canvas: document.getElementById("myCanvas"),
+      images: {
+        upArrow: createImage("./../images/down-arrow-alpha.png"),
+        downArrow: createImage("./../images/up-arrow-alpha.png"),
+      },  
     },
     queue: new MessageQueue(),
     inputQueue: new MessageQueue(),

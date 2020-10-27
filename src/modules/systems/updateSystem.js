@@ -15,42 +15,7 @@ function updateSystem(state) {
     data: newClock,
   });
 
-  const clockableGridsMsgs = updateClockableGridsSystem(
-    state.ecManager,
-    clock,
-    stepLen,
-  );
-  out.push(clockableGridsMsgs);
-
-  const rectRows = state.ecManager.join4(
-    "rect",
-    [
-      ["rect", "triggerable"],
-      ["rect", "toggleable"],
-      ["rect", "rectToGrid"],
-      ["rectToGrid", "gridId", "grid", "entityId"],
-    ]
-  );
-
-  for (const { grid, rectToGrid, triggerable, toggleable } of rectRows) {
-    const [tick, prevTick] = getTicks(clock.time, stepLen, grid.numCols);
-    if (tick !== prevTick) {
-      if (tick === rectToGrid.col && toggleable.isToggled) {
-        out.push({
-          type: "send osc",
-          data: { channel: triggerable.channel }
-        });
-      }
-    }
-  }
-
-  return out;
-}
-
-function updateClockableGridsSystem(ecManager, clock, stepLen) {
-  let out = [];
-
-  const rows = ecManager.join4(
+  const cgRows = state.ecManager.join4(
     "rect",
     [
       ["rect", "drawable"],
@@ -60,7 +25,27 @@ function updateClockableGridsSystem(ecManager, clock, stepLen) {
       ["grid", "clockable"]
     ]
   );
+  const cgMsgs = clockableGridsSystem(cgRows, clock, stepLen);
+  out.push(cgMsgs);
 
+  const oscRows = state.ecManager.join4(
+    "rect",
+    [
+      ["rect", "triggerable"],
+      ["rect", "toggleable"],
+      ["rect", "rectToGrid"],
+      ["rectToGrid", "gridId", "grid", "entityId"],
+    ]
+  );
+  const oscMsgs = sendOscSystem(oscRows, clock, stepLen);
+  out.push(oscMsgs);
+
+  return out;
+}
+
+function clockableGridsSystem(rows, clock, stepLen) {
+  let out = [];
+  
   for (const { grid, toggleable, rectToGrid } of rows) {
     const [tick, prevTick] = getTicks(clock.time, stepLen, grid.numCols);
     if (tick !== prevTick) {
@@ -81,6 +66,24 @@ function updateClockableGridsSystem(ecManager, clock, stepLen) {
           type: "update component",
           component: "toggleable",
           data: newToggleable,
+        });
+      }
+    }
+  }
+
+  return out;
+}
+
+function sendOscSystem(rows, clock, stepLen) {
+  let out = [];
+
+  for (const { grid, rectToGrid, triggerable, toggleable } of rows) {
+    const [tick, prevTick] = getTicks(clock.time, stepLen, grid.numCols);
+    if (tick !== prevTick) {
+      if (tick === rectToGrid.col && toggleable.isToggled) {
+        out.push({
+          type: "send osc",
+          data: { channel: triggerable.channel }
         });
       }
     }

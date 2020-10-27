@@ -7,6 +7,10 @@ function drawSystem(state) {
   let drawRectsMsgs = drawRectsSystem(state);
   out = out.concat(drawRectsMsgs);
 
+  let imageMsgs = drawImagesSystem(state);
+  //console.log(imageMsgs)
+  out.push(imageMsgs);
+
   return out;
 }
 
@@ -30,6 +34,18 @@ function drawRectsSystem(state) {
   for (const { rect, position, toggleable } of rows) {
     rect.color = toggleable.isToggled ? rect.altColor : rect.color;
     out.push({ type: "draw rect", data: { rect, position } });
+  }
+
+  return out;
+}
+
+function drawImagesSystem(state) {
+  let out = [];
+
+  let rows = state.ecManager.join2(["image", "position", "drawable"]);
+
+  for (const { image, position } of rows) {
+    out.push({ type: "draw image", data: { image, position } });
   }
 
   return out;
