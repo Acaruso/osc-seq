@@ -3,6 +3,7 @@ import { createUserInput } from "../entities/userInput";
 import { createSeqGridEntity } from "../entities/seqGrid";
 import { createTimeDivision } from "../entities/timeDivision";
 import { createBpmDisplay } from "../entities/bpmDisplay";
+import { createClock } from "../entities/clock";
 
 function createEntitiesAndComps(game) {
   game.state.ecManager = createEcManager();
@@ -32,10 +33,12 @@ function createComponentTables(game) {
   );
   game.state.ecManager.createComponentTable("triggerable", ["channel"]);
   game.state.ecManager.createComponentTable("image", ["name"]);
+  game.state.ecManager.createComponentTable("text", ["name"]);
 
-  game.state.ecManager.createComponentTable("clock", ["time"], {
-    isSingleton: true,
-  });
+  game.state.ecManager.createComponentTable("clock", 
+    ["time", "bpm"],
+    { isSingleton: true }
+  );
   game.state.ecManager.createComponentTable(
     "timeDivision",
     ["n1", "n2", "n4", "n8", "n16"],
@@ -49,9 +52,12 @@ function createComponentTables(game) {
 }
 
 function createSingletonComponents(game) {
+  const defaultBpm = 120;
+
   game.state.ecManager.addComponent(createUserInput(), "userInput");
-  game.state.ecManager.addComponent({ time: 0 }, "clock");
-  game.state.ecManager.addComponent(createTimeDivision(120), "timeDivision");
+  // game.state.ecManager.addComponent(createClock(120), "clock");
+  game.state.ecManager.addComponent({ time: 0, bpm: defaultBpm }, "clock");
+  game.state.ecManager.addComponent(createTimeDivision(defaultBpm), "timeDivision");
 }
 
 function createEntities(game) {
