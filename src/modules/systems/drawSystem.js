@@ -1,14 +1,13 @@
 function drawSystem(state) {
   let out = [];
 
-  let drawBallsMsgs = drawBallsSystem(state);
-  out = out.concat(drawBallsMsgs);
+  const drawBallsMsgs = drawBallsSystem(state);
+  out.push(drawBallsMsgs);
 
-  let drawRectsMsgs = drawRectsSystem(state);
-  out = out.concat(drawRectsMsgs);
+  const drawRectsMsgs = drawRectsSystem(state);
+  out.push(drawRectsMsgs);
 
-  let imageMsgs = drawImagesSystem(state);
-  //console.log(imageMsgs)
+  const imageMsgs = drawImagesSystem(state);
   out.push(imageMsgs);
 
   return out;

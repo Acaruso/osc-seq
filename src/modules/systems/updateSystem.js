@@ -1,3 +1,5 @@
+import { createTimeDivision } from "../entities/timeDivision";
+
 function updateSystem(state) {
   let out = [];
   const clock = state.ecManager.getComponent("clock");
@@ -40,19 +42,28 @@ function updateSystem(state) {
   const oscMsgs = sendOscSystem(oscRows, clock, stepLen);
   out.push(oscMsgs);
 
+  // const bpm = state.ecManager.getComponent("bpm");
+  // const newTimeDivision = createTimeDivision(bpm.value);
+
+  // out.push({
+  //   type: "update component",
+  //   component: "timeDivision",
+  //   data: newTimeDivision,
+  // });
+
   return out;
 }
 
 function clockableGridsSystem(rows, clock, stepLen) {
   let out = [];
-  
+
   for (const { grid, toggleable, rectToGrid } of rows) {
     const [tick, prevTick] = getTicks(clock.time, stepLen, grid.numCols);
     if (tick !== prevTick) {
       if (tick === rectToGrid.col) {
         let newToggleable = { ...toggleable };
         newToggleable.isToggled = true;
-  
+
         out.push({
           type: "update component",
           component: "toggleable",
@@ -61,7 +72,7 @@ function clockableGridsSystem(rows, clock, stepLen) {
       } else {
         let newToggleable = { ...toggleable };
         newToggleable.isToggled = false;
-    
+
         out.push({
           type: "update component",
           component: "toggleable",

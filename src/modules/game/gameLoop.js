@@ -7,14 +7,13 @@ function startGameLoop(game) {
 }
 
 function gameLoop(game) {
-  // handle input messages  
+  // handle input messages
   handleMessages(
     game.inputQueue,
-    game.messageTable, 
+    game.messageTable,
     game.logger,
     game.logging
   );
-  
   game.queue.push([
     { type: "clear screen" },
     controlSystem(game.state),
@@ -24,9 +23,9 @@ function gameLoop(game) {
   ]);
 
   handleMessages(
-    game.queue, 
-    game.messageTable, 
-    game.logger, 
+    game.queue,
+    game.messageTable,
+    game.logger,
     game.logging
   );
 }
