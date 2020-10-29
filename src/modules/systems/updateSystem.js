@@ -46,14 +46,14 @@ function updateSystem(state) {
   // update time divisions based on bpm
   // seems to cause perf issues but want to keep
 
-  // const bpm = state.ecManager.getComponent("bpm");
-  // const newTimeDivision = createTimeDivision(bpm.value);
+  const bpm = state.ecManager.getComponent("bpm");
+  const newTimeDivision = createTimeDivision(bpm.value);
 
-  // out.push({
-  //   type: "update component",
-  //   component: "timeDivision",
-  //   data: newTimeDivision,
-  // });
+  out.push({
+    type: "update component",
+    component: "timeDivision",
+    data: newTimeDivision,
+  });
 
   return out;
 }

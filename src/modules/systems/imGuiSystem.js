@@ -55,6 +55,25 @@ function doBpmDisplay(position, bpm, userInput, out) {
     { value: bpm.value, font: "20px \"Lucida Console\", Monaco, monospace" },
     out
   );
+
+  // doesn't work because toggle gets set to true each time
+  // need to put toggle state outside of loop
+  let toggle = true;
+  if(doRectButton(
+    { x: 300, y: 300 },
+    {
+      w: 20,
+      h: 20,
+      color: toggle ? "#66ffcc" : "#9999ff",
+      altColor: "#9999ff",
+      gridRect: false
+    },
+    userInput,
+    out
+  )) {
+    toggle = !toggle;
+    console.log(toggle)
+  };
 }
 
 function doImageButton(position, image, userInput, out) {
@@ -69,6 +88,18 @@ function doImageButton(position, image, userInput, out) {
   const coord = { x: userInput.cx, y: userInput.cy };
 
   if (userInput.click && isCoordInsideRect(coord, image, position)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function doRectButton(position, rect, userInput, out) {
+  out.push({ type: "draw rect", data: { rect, position } });
+
+  const coord = { x: userInput.cx, y: userInput.cy };
+
+  if (userInput.click && isCoordInsideRect(coord, rect, position)) {
     return true;
   } else {
     return false;
