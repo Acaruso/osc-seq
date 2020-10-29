@@ -23,16 +23,4 @@ function createUpdateBallPositionMessage(position, userInput) {
   };
 }
 
-function drawBall({ ball, position }, canvas) {
-  let ctx = canvas.getContext("2d");
-  ctx.beginPath();
-  ctx.arc(position.x, position.y, ball.radius, 0, Math.PI * 2);
-  ctx.fillStyle = "#0095DD";
-  ctx.fill();
-  ctx.closePath();
-}
-
-export { 
-  drawBall, 
-  createUpdateBallPositionMessage 
-};
+export { createUpdateBallPositionMessage };

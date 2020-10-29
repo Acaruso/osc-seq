@@ -14,8 +14,8 @@ function createGame(options = {}) {
       oscClient: new Client('127.0.0.1', 3333),
       canvas: document.getElementById("myCanvas"),
       images: {
-        upArrow: createImage("./../images/down-arrow-alpha.png"),
-        downArrow: createImage("./../images/up-arrow-alpha.png"),
+        upArrow: createImage("./../images/up-arrow-alpha.png"),
+        downArrow: createImage("./../images/down-arrow-alpha.png"),
       },  
     },
     queue: new MessageQueue(),
