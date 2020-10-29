@@ -42,6 +42,10 @@ function updateSystem(state) {
   const oscMsgs = sendOscSystem(oscRows, clock, stepLen);
   out.push(oscMsgs);
 
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // update time divisions based on bpm
+  // seems to cause perf issues but want to keep
+
   // const bpm = state.ecManager.getComponent("bpm");
   // const newTimeDivision = createTimeDivision(bpm.value);
 

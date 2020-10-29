@@ -1,6 +1,7 @@
 import { updateSystem } from "./../systems/updateSystem";
 import { drawSystem } from "./../systems/drawSystem";
 import { controlSystem } from "./../systems/controlSystem";
+import { imGuiSystem } from "./../systems/imGuiSystem";
 
 function startGameLoop(game) {
   game.state.interval = setInterval(() => gameLoop(game), 10);
@@ -14,11 +15,13 @@ function gameLoop(game) {
     game.logger,
     game.logging
   );
+
   game.queue.push([
     { type: "clear screen" },
     controlSystem(game.state),
     updateSystem(game.state),
     drawSystem(game.state),
+    imGuiSystem(game.state),
     { type: "end of draw loop" },
   ]);
 

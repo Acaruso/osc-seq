@@ -2,7 +2,6 @@ import { createEcManager } from "../entityComponent";
 import { createUserInput } from "../entities/userInput";
 import { createSeqGridEntity } from "../entities/seqGrid";
 import { createTimeDivision } from "../entities/timeDivision";
-import { createBpmDisplay } from "../entities/bpmDisplay";
 
 function createEntitiesAndComps(game) {
   game.state.ecManager = createEcManager();
@@ -33,18 +32,6 @@ function createComponentTables(game) {
   game.state.ecManager.createComponentTable("triggerable", ["channel"]);
 
   game.state.ecManager.createComponentTable("image", ["name", "w", "h"]);
-  game.state.ecManager.createComponentTable(
-    "text",
-    ["font", "tableName", "colName"]
-  );
-  game.state.ecManager.createComponentTable(
-    "incrementer",
-    ["tableName", "colName"]
-  );
-  game.state.ecManager.createComponentTable(
-    "decrementer",
-    ["tableName", "colName"]
-  );
 
   game.state.ecManager.createComponentTable(
     "clock",
@@ -78,8 +65,6 @@ function createSingletonComponents(game) {
 }
 
 function createEntities(game) {
-  createBpmDisplay(game.state.ecManager);
-
   game.state.ecManager.createEC({
     ball: { radius: 10 },
     position: { x: 0, y: 0 },

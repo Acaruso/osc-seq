@@ -1,7 +1,4 @@
-import { drawBall } from "../entities/ball";
-import { drawRect } from "../entities/rect";
-import { drawImage } from "../entities/image";
-import { drawText } from "../draw";
+import { drawBall, drawRect, drawImage, drawText } from "../draw";
 
 function createDrawMessageTable(state) {
   return {
