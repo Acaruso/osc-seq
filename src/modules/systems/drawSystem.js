@@ -12,9 +12,6 @@ function drawSystem(state) {
   const imageMsgs = drawImagesSystem(state);
   out.push(imageMsgs);
 
-  const textMsgs = drawTextSystem(state);
-  out.push(textMsgs);
-
   const imGuiMsgs = drawImGuiSystem(state);
   out.push(imGuiMsgs);
 
@@ -58,37 +55,55 @@ function drawImagesSystem(state) {
   return out;
 }
 
-function drawTextSystem(state) {
+function drawImGuiSystem(state) {
+  const userInput = state.ecManager.getComponent("userInput");
+  const bpm = state.ecManager.getComponent("bpm");
   let out = [];
 
-  let rows = state.ecManager.join2(["text", "position", "drawable"]);
+  doBpmDisplay({ x: 0, y: 0 }, bpm, userInput, out);
 
-  for (const { text, position } of rows) {
+  return out;
+}
+
+function doBpmDisplay(position, bpm, userInput, out) {
+  if (doImageButton(
+    { x: position.x, y: position.y },
+    { name: "upArrow", w: 25, h: 13 },
+    userInput,
+    out
+  )) {
+    let newBpm = { ...bpm };
+    newBpm.value += 1;
     out.push({
-      type: "draw text",
-      data: { text, position }
+      type: "update component",
+      component: "bpm",
+      data: newBpm,
     });
   }
 
-  return out;
-}
-
-function drawImGuiSystem(state) {
-  const userInput = state.ecManager.getComponent("userInput");
-
-  let out = [];
-
-  if (drawIncrementer(100, 200, userInput, out)) {
-    console.log('yep')
+  if (doImageButton(
+    { x: position.x, y: position.y + 20 },
+    { name: "downArrow", w: 25, h: 13 },
+    userInput,
+    out
+  )) {
+    let newBpm = { ...bpm };
+    newBpm.value -= 1;
+    out.push({
+      type: "update component",
+      component: "bpm",
+      data: newBpm,
+    });
   }
 
-  return out;
+  doText(
+    { x: position.x + 30, y: position.y + 10 },
+    { value: bpm.value, font: "20px \"Lucida Console\", Monaco, monospace" },
+    out
+  );
 }
 
-function drawIncrementer(x, y, userInput, out) {
-  const image = { name: "upArrow", w: 25, h: 13 };
-  const position = { x, y };
-
+function doImageButton(position, image, userInput, out) {
   out.push({
     type: "draw image",
     data: {
@@ -98,13 +113,22 @@ function drawIncrementer(x, y, userInput, out) {
   });
 
   const coord = { x: userInput.cx, y: userInput.cy };
-  const rect = { w: image.w, h: image.h };
 
-  if (userInput.click && isCoordInsideRect(coord, rect, position)) {
+  if (userInput.click && isCoordInsideRect(coord, image, position)) {
     return true;
   } else {
     return false;
   }
+}
+
+function doText(position, text, out) {
+  out.push({
+    type: "draw text",
+    data: {
+      text,
+      position,
+    }
+  });
 }
 
 export { drawSystem };

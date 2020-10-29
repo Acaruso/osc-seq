@@ -46,18 +46,13 @@ function createComponentTables(game) {
     ["tableName", "colName"]
   );
 
-  // game.state.ecManager.createComponentTable("parent", ["type"]);
-  // game.state.ecManager.createComponentTable(
-  //   "parentToChild",
-  //   ["parentId" , "childId"]
-  // );
-  // game.state.ecManager.createComponentTable("relativePosition", ["x", "y"]);
-
-  game.state.ecManager.createComponentTable("clock",
+  game.state.ecManager.createComponentTable(
+    "clock",
     ["time"],
     { isSingleton: true }
   );
-  game.state.ecManager.createComponentTable("bpm",
+  game.state.ecManager.createComponentTable(
+    "bpm",
     ["value"],
     { isSingleton: true }
   );
